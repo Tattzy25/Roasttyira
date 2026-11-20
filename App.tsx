@@ -262,13 +262,21 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden bg-[#000000]" onClick={() => setActiveSelector(null)}>
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 pt-12 bg-[#000000]">
-        <section className="mb-[75px] relative z-10">
-          <div className="space-y-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-6 sm:pt-12 bg-[#000000]">
+        <section className="mb-[75px] relative z-40">
+          <div className="space-y-6 sm:space-y-8">
             <div className="space-y-3">
+              <div className="flex items-center gap-2 justify-start pl-1">
+                <span className="font-['Dancing_Script',cursive] text-[18px] text-[#ffffff] font-normal leading-none">
+                  Powered by
+                </span>
+                <span className="px-2.5 py-0.5 bg-[#c1ff72] text-[#000000] rounded-md text-[15px] sm:text-[18px] font-bold uppercase tracking-wider leading-tight">
+                  {(duration === 'Lyria 3 Clip (30s)' || duration === 'Clip (30s)') ? 'LYRIA 3 30S' : (duration === 'Lyria 3 Pro' || duration === 'Pro') ? 'LYRIA 3 PRO' : 'LYRIA 3.5'}
+                </span>
+              </div>
               <div className="relative group/prompt min-h-[160px] space-y-4 bg-[#000000] text-[#ffffff]">
                 <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" multiple className="hidden" />
-                <div className="relative">
+                <div className="w-full bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus-within:border-[#ffffff] focus-within:shadow-[inset_0_0_0_1px_#ffffff,0_0_26px_rgba(193,255,114,0.5)] rounded-3xl transition-all duration-200">
                   <textarea
                     ref={promptTextareaRef}
                     value={prompt}
@@ -278,40 +286,17 @@ const App: React.FC = () => {
                     }}
                     onKeyDown={handleKeyDown}
                     placeholder="Atmospheric cinematic track with heavy sub-bass..."
-                    className="w-full min-h-[128px] bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus:!border-[#ffffff] rounded-3xl p-6 pb-20 text-xl font-light leading-relaxed resize-none focus:bg-[#000000] transition-all duration-200 pr-16"
+                    className="prompt-inner-textarea w-full min-h-[96px] bg-transparent text-[#ffffff] placeholder:text-white/40 rounded-t-3xl px-5 sm:px-6 pt-5 sm:pt-6 pb-2 text-lg sm:text-xl font-light leading-relaxed resize-none border-0"
                     style={{ overflow: 'hidden' }}
                   />
-                  <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                    {selectedImages.length < 10 && (
-                      <button 
-                        title="By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our Prohibited Use Policy. Please note that uploads, including those from Google Workspace, may be used to develop and improve Google products and services in accordance with our terms." 
-                        onClick={() => fileInputRef.current?.click()} 
-                        className={`transition-all shadow-sm border border-gray-100 flex items-center justify-center ${selectedImages.length > 0 ? 'p-2.5 rounded-2xl bg-[#000000] text-white' : 'px-4 py-2.5 rounded-2xl bg-white text-gray-500 hover:text-[#000000] gap-2 text-sm font-medium'}`}
-                      >
-                        <Icons.Camera className="w-5 h-5" />
-                        {selectedImages.length === 0 && <span>Add image references</span>}
-                      </button>
-                    )}
-                    {selectedImages.length > 0 && (
-                      <div className="flex gap-2">
-                        {selectedImages.map((img, idx) => (
-                          <div key={idx} className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-white shadow-lg animate-in zoom-in duration-200">
-                            <img src={img.previewUrl} className="w-full h-full object-cover" />
-                            <button onClick={() => removeImage(idx)} className="absolute top-0 right-0 w-4 h-4 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur hover:bg-black"><Icons.X className="w-2.5 h-2.5" /></button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="absolute bottom-4 right-4">
-                    <button 
-                      title="I'm feeling lucky" 
-                      onClick={handleFeelingLucky} 
-                      className={`p-[2px] music-gradient rounded-full shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 transition-all active:scale-95 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                  <div className="flex items-center justify-end px-4 pb-4 pt-1">
+                    <button
+                      title="Help Me, I'm Boring"
+                      onClick={handleFeelingLucky}
+                      className={`p-[2px] music-gradient rounded-full shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 transition-transform duration-150 active:scale-95 whitespace-nowrap shrink-0 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'}`}
                     >
-                      <span className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-sm font-bold">
-                        <Icons.Sparkles className="w-4 h-4 text-[#c1ff72] shrink-0" />
-                        I'm Feeling Lucky
+                      <span className="flex items-center justify-center min-h-[42px] px-5 py-2 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-[15px] sm:text-base font-bold whitespace-nowrap">
+                        Help Me, I'm Boring
                       </span>
                     </button>
                   </div>
@@ -325,37 +310,26 @@ const App: React.FC = () => {
                   onImageSelect={() => fileInputRef.current?.click()}
                   onImageRemove={removeImage}
                 />
-                <div className="mt-3 px-1 text-[11px] text-gray-400 leading-relaxed space-y-1">
-                  <p>
-                    By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our <a href="https://policies.google.com/terms/generative-ai/use-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Prohibited Use Policy</a>.
-                  </p>
-                  <p>
-                    Please note that uploads, including those from Google Workspace, may be used to develop and improve Google products and services in accordance with our <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">terms</a>.
-                  </p>
-                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-3">
-                <label className="text-[16px] font-bold uppercase tracking-widest text-gray-400 ml-1">Model / Length</label>
-                <div className="flex bg-gray-100 p-1 rounded-2xl w-fit">
-                  {(['Lyria 3.5', 'Lyria 3 Pro', 'Lyria 3 Clip (30s)'] as Duration[]).map((opt) => (
-                    <button key={opt} onClick={() => setDuration(opt)} className={`px-5 py-2.5 rounded-xl text-[16px] font-semibold transition-all ${duration === opt ? 'music-gradient text-[#000000] shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
-                      <span className="text-[16px]">{opt}</span>
+            <div className="space-y-3">
+              <label className="block text-[16px] font-bold uppercase tracking-widest text-gray-400 ml-1">Lyrics</label>
+              <div className="flex flex-wrap gap-1.5 bg-[#000000] border border-white/30 hover:border-white/60 transition-colors p-1.5 rounded-2xl w-full sm:w-fit">
+                {(['Auto', 'Custom', 'Instrumental'] as LyricsOption[]).map((opt) => {
+                  const isSelected = lyricsOption === opt;
+                  return (
+                    <button
+                      key={opt}
+                      onClick={() => setLyricsOption(opt)}
+                      className={`flex-1 sm:flex-initial p-[2px] rounded-xl transition-all duration-150 cursor-pointer ${isSelected ? 'music-gradient shadow-md shadow-[#c1ff72]/20' : 'bg-transparent'}`}
+                    >
+                      <span className={`flex items-center justify-center w-full min-h-[44px] px-3 sm:px-6 py-2 rounded-[10px] text-[15px] sm:text-[16px] whitespace-nowrap transition-colors duration-150 ${isSelected ? 'bg-[#000000] text-[#ffffff] font-bold' : 'bg-transparent text-white/70 hover:text-[#ffffff] hover:bg-white/10 font-semibold'}`}>
+                        {opt}
+                      </span>
                     </button>
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-3">
-                <label className="text-[16px] font-bold uppercase tracking-widest text-gray-400 ml-1">Lyrics</label>
-                <div className="flex bg-gray-100 p-1 rounded-2xl w-fit">
-                  {(['Auto', 'Custom', 'Instrumental'] as LyricsOption[]).map((opt) => (
-                    <button key={opt} onClick={() => setLyricsOption(opt)} className={`px-6 py-2.5 rounded-xl text-[16px] font-semibold transition-all ${lyricsOption === opt ? 'music-gradient text-[#000000] shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
-                      <span className="text-[16px]">{opt}</span>
-                    </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -366,7 +340,7 @@ const App: React.FC = () => {
                   value={customLyrics}
                   onChange={(e) => setCustomLyrics(e.target.value)}
                   placeholder={`[0:00 - 0:15] Hey this is your song\n[0:15 - ] You can write any lyrics you want`}
-                  className="w-full min-h-[160px] bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus:!border-[#ffffff] rounded-3xl p-6 text-lg font-light leading-relaxed resize-none focus:bg-[#000000] transition-all duration-200 custom-scrollbar"
+                  className="w-full min-h-[160px] bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus:!border-[#ffffff] rounded-3xl p-5 sm:p-6 text-base sm:text-lg font-light leading-relaxed resize-none focus:bg-[#000000] transition-all duration-200 custom-scrollbar"
                 />
               </div>
             )}
@@ -380,10 +354,25 @@ const App: React.FC = () => {
                   : `active:scale-[0.98] active:brightness-110 ${isTriggering ? 'scale-[0.98] brightness-125 ring-4 ring-[#c1ff72]/50' : ''}`
               }`}
             >
-              <span className="flex items-center justify-center w-full py-4 px-6 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-[41px] font-bold">
+              <span className="flex items-center justify-center w-full py-3.5 sm:py-4 px-4 sm:px-6 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-[20px] sm:text-3xl md:text-[41px] leading-tight font-bold whitespace-nowrap">
                 Create Roasttid Beatz
               </span>
             </button>
+
+            <details className="group/terms !mt-3 px-1 text-[12px] text-gray-400">
+              <summary className="list-none inline-flex items-center gap-1.5 cursor-pointer select-none text-gray-400 hover:text-white transition-colors py-1">
+                <span>Terms &amp; Upload Policy</span>
+                <Icons.ChevronDown className="w-3.5 h-3.5 transition-transform duration-150 group-open/terms:rotate-180" />
+              </summary>
+              <div className="mt-2 leading-relaxed space-y-1.5 text-[11px] text-gray-400">
+                <p>
+                  By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our <a href="https://policies.google.com/terms/generative-ai/use-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">Prohibited Use Policy</a>.
+                </p>
+                <p>
+                  Please note that uploads, including those from Google Workspace, may be used to develop and improve Google products and services in accordance with our <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">terms</a>.
+                </p>
+              </div>
+            </details>
           </div>
         </section>
 
@@ -412,25 +401,21 @@ const App: React.FC = () => {
                   <div className="flex-1 min-w-0 text-center md:text-left w-full">
                     <div className="space-y-1 relative">
                       <div className="flex items-center gap-4 justify-center md:justify-start flex-wrap">
-                        <h4 className="font-extrabold text-[#ffffff] tracking-tight truncate text-3xl md:text-4xl">
+                        <h4 className="font-extrabold text-[#ffffff] tracking-tight text-2xl sm:text-3xl md:text-4xl">
                           Ready to Synthesize
                         </h4>
                       </div>
-                      <div className="flex items-center gap-2 text-[18px] font-bold text-[#c1ff72] uppercase tracking-widest justify-center md:justify-start">
-                        <span className="font-['Dancing_Script',cursive] text-[18px] normal-case tracking-normal text-[#ffffff] font-normal">Powered by</span>
-                        <span className="px-2 py-0.5 bg-[#c1ff72] text-[#000000] rounded text-[18px]">
-                          {(duration === 'Lyria 3 Clip (30s)' || duration === 'Clip (30s)') ? 'LYRIA 3 CLIP' : (duration === 'Lyria 3 Pro' || duration === 'Pro') ? 'LYRIA 3 PRO' : 'LYRIA 3.5'}
-                        </span>
-                      </div>
                     </div>
 
-                    <div className="mt-6 space-y-4">
+                    <div className="mt-5 sm:mt-6 space-y-4">
                       <audio controls className="h-10 w-full rounded-2xl" />
                       <div className="flex gap-4 items-start relative">
                         <div className="flex-1 relative">
-                          <button disabled className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] shadow-lg shadow-[#c1ff72]/20 cursor-pointer">
-                            <Icons.Download className="w-4 h-4 text-[#000000] shrink-0" />
-                            <span className="text-[#000000]">Download</span>
+                          <button disabled className="w-full p-[2px] rounded-full music-gradient shadow-lg shadow-[#c1ff72]/20 opacity-60 cursor-not-allowed">
+                            <span className="flex items-center justify-center gap-2.5 w-full min-h-[44px] py-2.5 px-6 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-sm sm:text-base font-bold tracking-wide whitespace-nowrap">
+                              <Icons.Download className="w-4 h-4 text-[#c1ff72] shrink-0" />
+                              <span>Download</span>
+                            </span>
                           </button>
                         </div>
                       </div>
@@ -441,7 +426,7 @@ const App: React.FC = () => {
                 <div className="relative z-10">
                   <div className="mb-6 space-y-3">
                     <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Generation Directive</label>
-                    <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[24px] p-6 text-[16px] font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto transition-all duration-200 custom-scrollbar">
+                    <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[24px] p-4 sm:p-6 text-[15px] sm:text-[16px] font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto transition-all duration-200 custom-scrollbar">
                       {prompt.trim() || 'Your generation directive will appear here once you generate a song...'}
                     </div>
                   </div>
@@ -449,7 +434,7 @@ const App: React.FC = () => {
                   <div className="pt-4 pb-2">
                     <div className="space-y-3">
                       <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Composition Lyrics</label>
-                      <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[32px] p-8 h-[240px] overflow-y-auto text-[20px] text-[#ffffff] italic whitespace-pre-wrap font-['Georgia',serif] shadow-inner transition-all duration-200 custom-scrollbar">
+                      <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[32px] p-5 sm:p-8 h-[240px] overflow-y-auto text-[18px] sm:text-[20px] text-[#ffffff] italic whitespace-pre-wrap font-['Georgia',serif] shadow-inner transition-all duration-200 custom-scrollbar">
                         Your generated lyrics will appear here...
                       </div>
                     </div>
@@ -465,13 +450,9 @@ const App: React.FC = () => {
               const isFailed = result.status === 'error';
               
               return (
-                <div key={result.id} className="group relative transition-all duration-700 ease-in-out transform">
-                  <div className="relative transition-all duration-700 ease-in-out bg-[#000000]">
-                    <div className="absolute inset-0 z-0 rounded-[40px] overflow-hidden" style={{ backgroundImage: result.coverImageUrl ? `url(${result.coverImageUrl})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                      <div className="absolute inset-0 transition-opacity duration-700 ease-in-out backdrop-blur-2xl bg-[#000000] opacity-100" />
-                    </div>
-
-                    <div className={`relative z-[30] flex transition-all duration-700 ease-in-out gap-6 items-center ${isExpanded ? 'flex-col md:flex-row mb-8' : 'flex-row'}`} onClick={() => !isExpanded && toggleExpand(result.id)} style={{ cursor: isExpanded ? 'default' : 'pointer' }}>
+                <div key={result.id} className="group relative">
+                  <div className="relative bg-[#000000]">
+                    <div className={`relative z-[30] flex gap-6 items-center ${isExpanded ? 'flex-col md:flex-row mb-8' : 'flex-row'}`} onClick={() => !isExpanded && toggleExpand(result.id)} style={{ cursor: isExpanded ? 'default' : 'pointer' }}>
                       <div className={`relative shrink-0 transition-all duration-700 ease-in-out rounded-3xl overflow-hidden shadow-2xl ${isExpanded ? 'w-48 h-48 md:w-56 md:h-56' : 'w-16 h-16'}`}>
                         {result.coverImageUrl ? (
                           <img src={result.coverImageUrl} alt={result.title || "Roasttid Beatz"} className="w-full h-full object-cover" />
@@ -514,51 +495,51 @@ const App: React.FC = () => {
                         {(isEncoding || isGenerating) && <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center"><Icons.Loading className={`${isExpanded ? 'w-12 h-12' : 'w-6 h-6'} text-[#c1ff72] animate-spin`} /></div>}
                       </div>
 
-                      <div className={`flex-1 min-w-0 transition-all duration-700 ease-in-out ${isExpanded ? 'text-center md:text-left' : ''}`}>
+                      <div className={`flex-1 min-w-0 w-full ${isExpanded ? 'text-center md:text-left' : ''}`}>
                         <div className="space-y-1 relative">
-                          <div className={`flex items-center gap-4 ${isExpanded ? 'justify-center md:justify-start flex-wrap' : ''}`}>
-                            <h4 className={`font-extrabold text-[#ffffff] tracking-tight transition-all duration-700 ease-in-out truncate ${isExpanded ? 'text-3xl md:text-4xl' : 'text-lg'}`}>
+                          <div className={`flex items-center gap-3 sm:gap-4 ${isExpanded ? 'justify-center md:justify-start flex-wrap' : ''}`}>
+                            <h4 className={`font-extrabold text-[#ffffff] tracking-tight ${isExpanded ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-lg truncate'}`}>
                               {isFailed ? 'Processing Failed' : (result.title || (isGenerating ? "Synthesizing..." : "Untitled Composition"))}
                             </h4>
                             {(isFailed || result.audioUrl) && (
                               <div className="relative" onClick={e => e.stopPropagation()}>
-                                <button onClick={() => handleGenerate({ prompt: result.originalPrompt, duration: result.originalDuration, lyricsOption: result.originalLyricsOption })} className="flex items-center justify-center gap-2 px-4 py-2 rounded-full music-gradient border border-[#c1ff72]/40 text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] hover:brightness-110 transition-all shadow-sm active:scale-95 z-20">
-                                  <Icons.RefreshCw className="w-3.5 h-3.5 shrink-0 text-[#000000]" />
-                                  <span className="text-[#000000]">{isFailed ? 'Retry' : 'Regenerate'}</span>
+                                <button onClick={() => handleGenerate({ prompt: result.originalPrompt, duration: result.originalDuration, lyricsOption: result.originalLyricsOption })} className="p-[2px] rounded-full music-gradient shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 transition-transform duration-150 active:scale-95 z-20 cursor-pointer">
+                                  <span className="flex items-center justify-center gap-2 min-h-[40px] px-5 py-2 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-sm font-bold tracking-wide whitespace-nowrap">
+                                    <Icons.RefreshCw className="w-4 h-4 shrink-0 text-[#c1ff72]" />
+                                    <span>{isFailed ? 'Retry' : 'Regenerate'}</span>
+                                  </span>
                                 </button>
                               </div>
                             )}
                           </div>
-                          <div className={`flex items-center gap-2 text-[18px] font-bold text-[#c1ff72] uppercase tracking-widest transition-all duration-700 ease-in-out ${isExpanded ? 'justify-center md:justify-start' : ''}`}>
-                            <span className="font-['Dancing_Script',cursive] text-[18px] normal-case tracking-normal text-[#ffffff] font-normal">Powered by</span>
-                            <span className="px-2 py-0.5 bg-[#c1ff72] text-[#000000] rounded text-[18px]">{(result.duration === 'Lyria 3 Clip (30s)' || result.duration === 'Clip (30s)') ? 'LYRIA 3 CLIP' : (result.duration === 'Lyria 3 Pro' || result.duration === 'Pro') ? 'LYRIA 3 PRO' : 'LYRIA 3.5'}</span>
-                          </div>
                         </div>
 
-                        <div className={`transition-all duration-700 ease-in-out overflow-visible ${isExpanded ? 'max-h-[200px] mt-6 opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className={`transition-opacity duration-300 overflow-visible ${isExpanded ? 'max-h-[220px] mt-6 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                           {result.audioUrl && (
                             <div className="space-y-4">
                               <audio id={`audio-${result.id}`} onPlay={() => setIsResultPlaying(result.id)} onPause={() => setIsResultPlaying(null)} controls className="h-10 w-full rounded-2xl"><source src={result.audioUrl} /></audio>
                               <div className="flex gap-4 items-start relative">
                                 <div className="flex-1 relative group/download" onClick={e => e.stopPropagation()}>
-                                  <button onClick={(e) => { e.stopPropagation(); handleDownload(result); }} className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] hover:brightness-110 transition-all shadow-lg shadow-[#c1ff72]/20 active:scale-95 ${isEncoding ? 'opacity-50 cursor-wait' : ''}`} disabled={isEncoding}>
-                                    {isEncoding ? <Icons.Loading className="w-4 h-4 animate-spin text-[#000000] shrink-0" /> : <Icons.Download className="w-4 h-4 text-[#000000] shrink-0" />}
-                                    <span className="text-[#000000]">{isEncoding ? `Processing ${Math.round(encodingProgress)}%` : 'Download'}</span>
+                                  <button onClick={(e) => { e.stopPropagation(); handleDownload(result); }} className={`w-full p-[2px] rounded-full music-gradient shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 transition-transform duration-150 active:scale-[0.98] cursor-pointer ${isEncoding ? 'opacity-60 cursor-wait' : ''}`} disabled={isEncoding}>
+                                    <span className="flex items-center justify-center gap-2.5 w-full min-h-[44px] py-2.5 px-6 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-sm sm:text-base font-bold tracking-wide whitespace-nowrap">
+                                      {isEncoding ? <Icons.Loading className="w-4 h-4 animate-spin text-[#c1ff72] shrink-0" /> : <Icons.Download className="w-4 h-4 text-[#c1ff72] shrink-0" />}
+                                      <span className="tabular-nums">{isEncoding ? `Processing ${Math.round(encodingProgress)}%` : 'Download'}</span>
+                                    </span>
                                   </button>
                                   {!isEncoding && (
-                                    <div className="absolute top-full left-0 right-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover/download:opacity-100 group-hover/download:translate-y-0 group-hover/download:pointer-events-auto transition-all duration-300 z-[60]">
-                                      <div className="bg-[#000000] rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
-                                        <button onClick={(e) => { e.stopPropagation(); handleDownload(result); }} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-900 transition-colors">
-                                          <div className="w-8 h-8 bg-[#c1ff72]/15 text-[#c1ff72] rounded-lg flex items-center justify-center"><Icons.Download className="w-4 h-4" /></div>
-                                          <div><div className="text-[10px] font-bold uppercase tracking-wider text-white">Track</div><div className="text-[9px] text-gray-400">High fidelity master</div></div>
+                                    <div className="absolute top-full left-0 right-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover/download:opacity-100 group-hover/download:translate-y-0 group-hover/download:pointer-events-auto transition-all duration-200 z-[60]">
+                                      <div className="bg-[#000000] rounded-2xl shadow-2xl border border-white/30 overflow-hidden">
+                                        <button onClick={(e) => { e.stopPropagation(); handleDownload(result); }} className="w-full min-h-[48px] flex flex-col justify-center px-4 py-3 text-left hover:bg-white/10 transition-colors">
+                                          <div className="text-sm font-bold text-white">Track</div>
+                                          <div className="text-xs text-gray-400">High fidelity master</div>
                                         </button>
-                                        <button onClick={(e) => { e.stopPropagation(); onDownloadVideo(result, false); }} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-900 border-t border-gray-800 transition-colors">
-                                          <div className="w-8 h-8 bg-[#c1ff72]/15 text-[#c1ff72] rounded-lg flex items-center justify-center"><Icons.Video className="w-4 h-4" /></div>
-                                          <div><div className="text-[10px] font-bold uppercase tracking-wider text-white">Video</div><div className="text-[9px] text-gray-400">Reactive visual map</div></div>
+                                        <button onClick={(e) => { e.stopPropagation(); onDownloadVideo(result, false); }} className="w-full min-h-[48px] flex flex-col justify-center px-4 py-3 text-left hover:bg-white/10 border-t border-white/15 transition-colors">
+                                          <div className="text-sm font-bold text-white">Video</div>
+                                          <div className="text-xs text-gray-400">Reactive visual map</div>
                                         </button>
-                                        <button onClick={(e) => { e.stopPropagation(); onDownloadVideo(result, true); }} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-900 border-t border-gray-800 transition-colors">
-                                          <div className="w-8 h-8 bg-[#c1ff72]/15 text-[#c1ff72] rounded-lg flex items-center justify-center"><Icons.Sparkles className="w-4 h-4" /></div>
-                                          <div><div className="text-[10px] font-bold uppercase tracking-wider text-white">Karaoke</div><div className="text-[9px] text-gray-400">Timed sync engine</div></div>
+                                        <button onClick={(e) => { e.stopPropagation(); onDownloadVideo(result, true); }} className="w-full min-h-[48px] flex flex-col justify-center px-4 py-3 text-left hover:bg-white/10 border-t border-white/15 transition-colors">
+                                          <div className="text-sm font-bold text-white">Karaoke</div>
+                                          <div className="text-xs text-gray-400">Timed sync engine</div>
                                         </button>
                                       </div>
                                     </div>
@@ -579,7 +560,7 @@ const App: React.FC = () => {
                         {(result.fullPrompt || result.originalPrompt) && (
                           <div className="mb-6 space-y-3">
                             <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Generation Directive</label>
-                            <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[24px] p-6 text-[16px] font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto transition-all duration-200 custom-scrollbar">
+                            <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[24px] p-4 sm:p-6 text-[15px] sm:text-[16px] font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto transition-all duration-200 custom-scrollbar">
                               {result.fullPrompt || result.originalPrompt}
                             </div>
                           </div>
@@ -588,7 +569,7 @@ const App: React.FC = () => {
                         <div className="pt-4 pb-2">
                           <div className="space-y-3">
                             <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Composition Lyrics</label>
-                            <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[32px] p-8 h-[240px] overflow-y-auto text-[32px] leading-[40px] text-center text-[#ffffff] italic whitespace-pre-wrap font-serif shadow-inner transition-all duration-200 custom-scrollbar">{result.lyrics ? cleanLyricsForDisplay(result.lyrics) : (isGenerating ? "Synthesizing narrative..." : "Instrumental")}</div>
+                            <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[32px] p-5 sm:p-8 h-[240px] overflow-y-auto text-xl sm:text-2xl md:text-[32px] leading-relaxed md:leading-[40px] text-center text-[#ffffff] italic whitespace-pre-wrap font-serif shadow-inner transition-all duration-200 custom-scrollbar">{result.lyrics ? cleanLyricsForDisplay(result.lyrics) : (isGenerating ? "Synthesizing narrative..." : "Instrumental")}</div>
                           </div>
                         </div>
                       </div>

@@ -34,13 +34,17 @@
         }
         input:focus {
             outline: none;
-            border-color: #000000;
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+            border-color: #ffffff;
+            box-shadow: 0 0 0 2px rgba(193, 255, 114, 0.35);
         }
-        textarea:focus {
+        textarea:not(.prompt-inner-textarea):focus {
             outline: none;
             border-color: #ffffff;
             box-shadow: inset 0 0 0 1px #ffffff, 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 24px rgba(193, 255, 114, 0.45);
+        }
+        .prompt-inner-textarea:focus {
+            outline: none;
+            box-shadow: none;
         }
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
