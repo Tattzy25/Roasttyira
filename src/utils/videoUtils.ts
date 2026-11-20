@@ -11,22 +11,13 @@
  */
 import { SongResult } from '../../types';
 import { parseTimedLyrics } from './lyricsUtils';
-import { logFunctionCall } from './logger';
 
-/**
- * Generates and downloads a video combining the song's audio, cover art, and optional lyrics.
- * @param result The song result object containing audio and image URLs.
- * @param withLyrics Whether to overlay synchronized lyrics on the video.
- * @param onProgress Callback function to report encoding progress (0-100).
- * @param onComplete Callback function executed when encoding finishes.
- */
 export const handleDownloadVideo = async (
   result: SongResult,
   withLyrics: boolean,
   onProgress: (progress: number) => void,
   onComplete: () => void
 ) => {
-  logFunctionCall('handleDownloadVideo', { resultId: result.id, withLyrics });
   if (!result.audioUrl) {
     onComplete();
     return;
@@ -57,7 +48,6 @@ export const handleDownloadVideo = async (
       resolve();
     };
     img.onerror = () => {
-      console.warn('[Video Export] Cover image failed to load (likely CORS):', coverUrl);
       resolve();
     };
     img.src = coverUrl;
@@ -90,11 +80,6 @@ export const handleDownloadVideo = async (
   };
 
   const timedLyrics = withLyrics ? parseTimedLyrics(result.lyrics) : [];
-  console.log('[Video Debug] withLyrics:', withLyrics);
-  console.log('[Video Debug] timedLyrics length:', timedLyrics.length);
-  if (withLyrics && timedLyrics.length === 0) {
-    console.warn('[Video Debug] WARNING: withLyrics is true, but timedLyrics is empty. Lyrics will not be displayed.');
-  }
 
   const workerCode = `
     let interval;
@@ -113,8 +98,7 @@ export const handleDownloadVideo = async (
   let lastProgress = -1;
 
   recorder.start();
-  audio.play().catch(err => {
-    console.error("Audio playback failed:", err);
+  audio.play().catch(() => {
     worker.postMessage('stop');
     worker.terminate();
     URL.revokeObjectURL(workerUrl);

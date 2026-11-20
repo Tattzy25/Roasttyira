@@ -18,7 +18,6 @@ import { GoogleGenAI, Modality } from "./genaiProxy";
 import { Duration, LyricsOption, GenerationState, SongResult } from './types';
 import { Icons, PROMPT_HELPER_CONFIG } from './constants';
 import { CONFIG } from './src/config';
-import { logFunctionCall } from './src/utils/logger';
 import { createAudioUrlFromBase64 } from './src/utils/audioUtils';
 import { cleanLyricsForDisplay } from './src/utils/lyricsUtils';
 import { handleDownloadVideo } from './src/utils/videoUtils';
@@ -41,7 +40,7 @@ const App: React.FC = () => {
   const [placeholderVideoFailed, setPlaceholderVideoFailed] = useState(false);
 
   // Helper Mode States
-  const [helperSections, setHelperSections] = useState<HelperSection[]>([
+  const [helperSections, setHelperSections] = useState<HelperSection[]>(() => [
     { 
       id: 'initial', 
       type: 'main', 
@@ -129,30 +128,20 @@ const App: React.FC = () => {
     setGen(prev => ({ results: prev.results.map(r => r.id === id ? updater(r) : r) }));
   };
 
-  const addLog = (id: string, message: string) => {
-    updateResult(id, prev => ({ ...prev, logs: [...prev.logs, `[${new Date().toLocaleTimeString()}] ${message}`] }));
-  };
-
   const toggleExpand = (id: string) => {
     setGen(prev => ({ results: prev.results.map(r => r.id === id ? { ...r, isExpanded: !r.isExpanded } : r) }));
   };
 
   const handleGenerateSongTitle = async (id: string, musicPrompt: string, lyricContext: string) => {
-    addLog(id, "Decoding narrative architecture for title...");
     const title = await generateSongTitle(musicPrompt, lyricContext);
     updateResult(id, r => ({ ...r, title }));
-    addLog(id, `Identity confirmed: "${title}"`);
     return title;
   };
 
   const handleGenerateCoverArt = async (id: string, musicPrompt: string, lyricContext: string, title?: string) => {
-    addLog(id, "Synthesizing visual representation...");
     const base64Image = await generateCoverArt(musicPrompt, lyricContext, title);
     if (base64Image) {
       updateResult(id, r => ({ ...r, coverImageUrl: base64Image }));
-      addLog(id, "Visual synthesis finalized.");
-    } else {
-      addLog(id, "Visual synthesis skipped.");
     }
   };
 
@@ -186,8 +175,6 @@ const App: React.FC = () => {
     const isClip = activeDuration === 'Lyria 3 Clip (30s)' || activeDuration === 'Clip (30s)';
     const isPro = activeDuration === 'Lyria 3 Pro' || activeDuration === 'Pro';
     const modelId = isClip ? CONFIG.MODEL_ID_3_CLIP : isPro ? CONFIG.MODEL_ID_3_PRO : CONFIG.MODEL_ID_3_5;
-    const modelDisplayName = isClip ? 'Lyria 3 Clip' : isPro ? 'Lyria 3 Pro' : 'Lyria 3.5';
-    addLog(newId, `Waking ${modelDisplayName} engine...`);
     try {
       const ai = new GoogleGenAI({ apiKey: "server-side" });
       let lyricInstruction = activeLyricsOption === 'Instrumental' ? "IMPORTANT: This track MUST be strictly INSTRUMENTAL." : 
@@ -231,8 +218,7 @@ const App: React.FC = () => {
           }
         }
       }
-      console.log('[Raw Generated Lyrics]', textAccumulator);
-      if (audioAccumulator) { updateResult(newId, r => ({ ...r, status: 'completed', audioUrl: createAudioUrlFromBase64(audioAccumulator, mimeType) })); addLog(newId, "Signal stabilized."); }
+      if (audioAccumulator) { updateResult(newId, r => ({ ...r, status: 'completed', audioUrl: createAudioUrlFromBase64(audioAccumulator, mimeType) })); }
       else throw new Error("Zero audio bits captured.");
     } catch (err: any) { updateResult(newId, r => ({ ...r, status: 'error', error: err.message || "Synthesis interrupted." })); }
   };
@@ -512,6 +498,11 @@ const App: React.FC = () => {
                               </div>
                             )}
                           </div>
+                          {isFailed && result.error && (
+                            <p className="mt-2 text-sm font-medium text-red-400 break-words">
+                              {result.error}
+                            </p>
+                          )}
                         </div>
 
                         <div className={`transition-opacity duration-300 overflow-visible ${isExpanded ? 'max-h-[220px] mt-6 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
