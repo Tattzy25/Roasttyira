@@ -47,7 +47,7 @@ export const handleDownloadVideo = async (
     return;
   }
 
-  const coverUrl = result.coverImageUrl || "https://model.tattty.com/ROASTTID-BEATZ.png";
+  const coverUrl = result.coverImageUrl || "https://model.tattty.com/BEATZ-LOGO.png";
   const img = new Image();
   img.crossOrigin = "anonymous";
   let hasValidCover = false;

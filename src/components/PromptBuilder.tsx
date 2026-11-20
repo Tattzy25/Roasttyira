@@ -193,7 +193,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
   };
 
   return (
-    <div className="w-full bg-[#000000] text-[#ffffff] border border-gray-100 rounded-3xl p-8 space-y-6 transition-all" onClick={e => e.stopPropagation()}>
+    <div className="w-full bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus-within:border-[#ffffff] focus-within:shadow-[inset_0_0_0_1px_#ffffff,0_0_26px_rgba(193,255,114,0.5)] rounded-3xl p-8 space-y-6 transition-all duration-200" onClick={e => e.stopPropagation()}>
       {helperSections.map((s) => (
         <div key={s.id} className="flex flex-wrap items-center gap-x-3 gap-y-4 text-xl font-light leading-relaxed">
           {s.type === 'main' ? (

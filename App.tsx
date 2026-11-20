@@ -38,6 +38,7 @@ const App: React.FC = () => {
   const [encodingProgress, setEncodingProgress] = useState(0);
   const [selectedImages, setSelectedImages] = useState<{data: string, mimeType: string, previewUrl: string}[]>([]);
   const [isTriggering, setIsTriggering] = useState(false);
+  const [placeholderVideoFailed, setPlaceholderVideoFailed] = useState(false);
 
   // Helper Mode States
   const [helperSections, setHelperSections] = useState<HelperSection[]>([
@@ -247,7 +248,7 @@ const App: React.FC = () => {
     setEncodingProgress(0);
 
     await handleDownloadVideo(
-      { ...result, coverImageUrl: result.coverImageUrl || "https://model.tattty.com/ROASTTID-BEATZ.png" },
+      { ...result, coverImageUrl: result.coverImageUrl || "https://model.tattty.com/BEATZ-LOGO.png" },
       withLyrics,
       (progress) => setEncodingProgress(progress),
       () => {
@@ -262,7 +263,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden bg-[#000000]" onClick={() => setActiveSelector(null)}>
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 pt-12 bg-[#000000]">
-        <section className="bg-[#000000] rounded-[40px] p-8 md:p-12 card-shadow border border-gray-100 mb-12 relative z-10">
+        <section className="mb-[75px] relative z-10">
           <div className="space-y-8">
             <div className="space-y-3">
               <div className="relative group/prompt min-h-[160px] space-y-4 bg-[#000000] text-[#ffffff]">
@@ -277,7 +278,7 @@ const App: React.FC = () => {
                     }}
                     onKeyDown={handleKeyDown}
                     placeholder="Atmospheric cinematic track with heavy sub-bass..."
-                    className="w-full min-h-[128px] bg-[#000000] text-[#ffffff] border border-[#ffffff] focus:!border-[#ffffff] rounded-3xl p-6 pb-20 text-xl font-light leading-relaxed resize-none focus:bg-[#000000] transition-all pr-16"
+                    className="w-full min-h-[128px] bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus:!border-[#ffffff] rounded-3xl p-6 pb-20 text-xl font-light leading-relaxed resize-none focus:bg-[#000000] transition-all duration-200 pr-16"
                     style={{ overflow: 'hidden' }}
                   />
                   <div className="absolute bottom-4 left-4 flex items-center gap-2">
@@ -306,9 +307,9 @@ const App: React.FC = () => {
                     <button 
                       title="I'm feeling lucky" 
                       onClick={handleFeelingLucky} 
-                      className={`p-2.5 music-gradient text-white shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 rounded-2xl transition-all active:scale-90 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                      className={`p-2.5 music-gradient text-[#000000] shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 rounded-2xl transition-all active:scale-90 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                     >
-                      <Icons.Sparkles className="w-5 h-5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
+                      <Icons.Sparkles className="w-5 h-5 text-[#000000]" />
                     </button>
                   </div>
                 </div>
@@ -334,21 +335,21 @@ const App: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Model / Length</label>
+                <label className="text-[16px] font-bold uppercase tracking-widest text-gray-400 ml-1">Model / Length</label>
                 <div className="flex bg-gray-100 p-1 rounded-2xl w-fit">
                   {(['Lyria 3.5', 'Lyria 3 Pro', 'Lyria 3 Clip (30s)'] as Duration[]).map((opt) => (
-                    <button key={opt} onClick={() => setDuration(opt)} className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${duration === opt ? 'music-gradient text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
-                      <span className={duration === opt ? 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]' : ''}>{opt}</span>
+                    <button key={opt} onClick={() => setDuration(opt)} className={`px-5 py-2.5 rounded-xl text-[16px] font-semibold transition-all ${duration === opt ? 'music-gradient text-[#000000] shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
+                      <span className="text-[16px]">{opt}</span>
                     </button>
                   ))}
                 </div>
               </div>
               <div className="space-y-3">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Lyrics</label>
+                <label className="text-[16px] font-bold uppercase tracking-widest text-gray-400 ml-1">Lyrics</label>
                 <div className="flex bg-gray-100 p-1 rounded-2xl w-fit">
                   {(['Auto', 'Custom', 'Instrumental'] as LyricsOption[]).map((opt) => (
-                    <button key={opt} onClick={() => setLyricsOption(opt)} className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${lyricsOption === opt ? 'music-gradient text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
-                      <span className={lyricsOption === opt ? 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]' : ''}>{opt}</span>
+                    <button key={opt} onClick={() => setLyricsOption(opt)} className={`px-6 py-2.5 rounded-xl text-[16px] font-semibold transition-all ${lyricsOption === opt ? 'music-gradient text-[#000000] shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
+                      <span className="text-[16px]">{opt}</span>
                     </button>
                   ))}
                 </div>
@@ -362,7 +363,7 @@ const App: React.FC = () => {
                   value={customLyrics}
                   onChange={(e) => setCustomLyrics(e.target.value)}
                   placeholder={`[0:00 - 0:15] Hey this is your song\n[0:15 - ] You can write any lyrics you want`}
-                  className="w-full min-h-[160px] bg-[#000000] text-[#ffffff] border border-gray-100 rounded-3xl p-6 text-lg font-light leading-relaxed resize-none focus:bg-[#000000] transition-all custom-scrollbar"
+                  className="w-full min-h-[160px] bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus:!border-[#ffffff] rounded-3xl p-6 text-lg font-light leading-relaxed resize-none focus:bg-[#000000] transition-all duration-200 custom-scrollbar"
                 />
               </div>
             )}
@@ -370,29 +371,37 @@ const App: React.FC = () => {
             <button 
               onClick={() => handleGenerate()} 
               disabled={(!prompt.trim() && selectedImages.length === 0) || CONFIG.IS_MAINTENANCE_MODE} 
-              className={`w-full py-5 rounded-3xl text-lg font-bold text-white transition-all shadow-xl music-gradient shadow-[#c1ff72]/20 cursor-pointer ${
+              className={`w-full py-5 rounded-3xl text-lg font-bold text-[#000000] transition-all shadow-xl music-gradient shadow-[#c1ff72]/20 cursor-pointer ${
                 ((!prompt.trim() && selectedImages.length === 0) || CONFIG.IS_MAINTENANCE_MODE)
                   ? '' 
                   : `active:scale-[0.98] active:brightness-110 ${isTriggering ? 'scale-[0.98] brightness-125 ring-4 ring-[#c1ff72]/50' : ''}`
               }`}
             >
-              <span className="drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">Generate Song</span>
+              <span className="text-[#000000] text-[41px]">Create Roasttid Beatz</span>
             </button>
           </div>
         </section>
 
-        <div className="relative mb-12 flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200/60"></div></div>
-          <div className="relative bg-[#000000] px-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Songs Gallery</div>
-        </div>
-
         <div className="space-y-6 pb-12">
           {gen.results.length === 0 ? (
             <div className="group relative transition-all duration-700 ease-in-out transform">
-              <div className="relative transition-all duration-700 ease-in-out border border-gray-200/60 shadow-lg rounded-[40px] p-8 pb-12 bg-[#000000]">
+              <div className="relative transition-all duration-700 ease-in-out bg-[#000000]">
                 <div className="relative z-[30] flex flex-col md:flex-row mb-8 gap-6 items-center">
                   <div className="relative shrink-0 rounded-3xl overflow-hidden shadow-2xl w-48 h-48 md:w-56 md:h-56">
-                    <img src="https://model.tattty.com/ROASTTID-BEATZ.png" alt="Roasttid Beatz" className="w-full h-full object-cover" />
+                    {placeholderVideoFailed ? (
+                      <img src="https://model.tattty.com/BEATZ-LOGO.png" alt="Roasttid Beatz" className="w-full h-full object-cover" />
+                    ) : (
+                      <video
+                        src="https://model.tattty.com/BEATZ-VIDEO.mp4"
+                        poster="https://model.tattty.com/BEATZ-LOGO.png"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        onError={() => setPlaceholderVideoFailed(true)}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0 text-center md:text-left w-full">
@@ -402,11 +411,11 @@ const App: React.FC = () => {
                           Ready to Synthesize
                         </h4>
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] font-bold text-[#c1ff72] uppercase tracking-widest justify-center md:justify-start">
-                        <span className="px-2 py-0.5 bg-[#c1ff72] text-[#000000] rounded">
+                      <div className="flex items-center gap-2 text-[18px] font-bold text-[#c1ff72] uppercase tracking-widest justify-center md:justify-start">
+                        <span className="font-['Dancing_Script',cursive] text-[18px] normal-case tracking-normal text-[#ffffff] font-normal">Powered by</span>
+                        <span className="px-2 py-0.5 bg-[#c1ff72] text-[#000000] rounded text-[18px]">
                           {(duration === 'Lyria 3 Clip (30s)' || duration === 'Clip (30s)') ? 'LYRIA 3 CLIP' : (duration === 'Lyria 3 Pro' || duration === 'Pro') ? 'LYRIA 3 PRO' : 'LYRIA 3.5'}
                         </span>
-                        <span>• {(duration === 'Lyria 3 Clip (30s)' || duration === 'Clip (30s)') ? '30s Clip' : 'Full Song'}</span>
                       </div>
                     </div>
 
@@ -414,9 +423,9 @@ const App: React.FC = () => {
                       <audio controls className="h-10 w-full rounded-2xl" />
                       <div className="flex gap-4 items-start relative">
                         <div className="flex-1 relative">
-                          <button disabled className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-white text-[10px] font-bold uppercase tracking-[0.1em] shadow-lg shadow-[#c1ff72]/20 cursor-pointer">
-                            <Icons.Download className="w-4 h-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
-                            <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">Download</span>
+                          <button disabled className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] shadow-lg shadow-[#c1ff72]/20 cursor-pointer">
+                            <Icons.Download className="w-4 h-4 text-[#000000]" />
+                            <span className="text-[#000000]">Download</span>
                           </button>
                         </div>
                       </div>
@@ -426,16 +435,16 @@ const App: React.FC = () => {
 
                 <div className="relative z-10">
                   <div className="mb-6 space-y-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Generation Directive</label>
-                    <div className="bg-[#000000] border border-gray-100 rounded-[24px] p-6 text-xs font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto custom-scrollbar">
+                    <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Generation Directive</label>
+                    <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[24px] p-6 text-[16px] font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto transition-all duration-200 custom-scrollbar">
                       {prompt.trim() || 'Your generation directive will appear here once you generate a song...'}
                     </div>
                   </div>
 
                   <div className="pt-4 pb-2">
                     <div className="space-y-3">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Composition Lyrics</label>
-                      <div className="bg-[#000000] border border-gray-100 rounded-[32px] p-8 h-[240px] overflow-y-auto text-base text-[#ffffff] italic whitespace-pre-wrap font-serif shadow-inner custom-scrollbar">
+                      <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Composition Lyrics</label>
+                      <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[32px] p-8 h-[240px] overflow-y-auto text-[20px] text-[#ffffff] italic whitespace-pre-wrap font-['Georgia',serif] shadow-inner transition-all duration-200 custom-scrollbar">
                         Your generated lyrics will appear here...
                       </div>
                     </div>
@@ -452,14 +461,29 @@ const App: React.FC = () => {
               
               return (
                 <div key={result.id} className="group relative transition-all duration-700 ease-in-out transform">
-                  <div className={`relative transition-all duration-700 ease-in-out border border-gray-200/60 shadow-lg rounded-[40px] ${isExpanded ? 'p-8 pb-12' : 'p-4'}`}>
+                  <div className="relative transition-all duration-700 ease-in-out bg-[#000000]">
                     <div className="absolute inset-0 z-0 rounded-[40px] overflow-hidden" style={{ backgroundImage: result.coverImageUrl ? `url(${result.coverImageUrl})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}>
                       <div className="absolute inset-0 transition-opacity duration-700 ease-in-out backdrop-blur-2xl bg-[#000000] opacity-100" />
                     </div>
 
                     <div className={`relative z-[30] flex transition-all duration-700 ease-in-out gap-6 items-center ${isExpanded ? 'flex-col md:flex-row mb-8' : 'flex-row'}`} onClick={() => !isExpanded && toggleExpand(result.id)} style={{ cursor: isExpanded ? 'default' : 'pointer' }}>
                       <div className={`relative shrink-0 transition-all duration-700 ease-in-out rounded-3xl overflow-hidden shadow-2xl ${isExpanded ? 'w-48 h-48 md:w-56 md:h-56' : 'w-16 h-16'}`}>
-                        <img src={result.coverImageUrl || "https://model.tattty.com/ROASTTID-BEATZ.png"} alt={result.title || "Roasttid Beatz"} className="w-full h-full object-cover" />
+                        {result.coverImageUrl ? (
+                          <img src={result.coverImageUrl} alt={result.title || "Roasttid Beatz"} className="w-full h-full object-cover" />
+                        ) : placeholderVideoFailed ? (
+                          <img src="https://model.tattty.com/BEATZ-LOGO.png" alt={result.title || "Roasttid Beatz"} className="w-full h-full object-cover" />
+                        ) : (
+                          <video
+                            src="https://model.tattty.com/BEATZ-VIDEO.mp4"
+                            poster="https://model.tattty.com/BEATZ-LOGO.png"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            onError={() => setPlaceholderVideoFailed(true)}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
                         {result.audioUrl && !isEncoding && !isGenerating && (
                           <button
                             onClick={(e) => {
@@ -493,16 +517,16 @@ const App: React.FC = () => {
                             </h4>
                             {(isFailed || result.audioUrl) && (
                               <div className="relative" onClick={e => e.stopPropagation()}>
-                                <button onClick={() => handleGenerate({ prompt: result.originalPrompt, duration: result.originalDuration, lyricsOption: result.originalLyricsOption })} className="flex items-center justify-center gap-2 px-4 py-2 rounded-full music-gradient border border-[#c1ff72]/40 text-white text-[10px] font-bold uppercase tracking-[0.1em] hover:brightness-110 transition-all shadow-sm active:scale-95 z-20">
-                                  <Icons.RefreshCw className="w-3.5 h-3.5 shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
-                                  <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{isFailed ? 'Retry' : 'Regenerate'}</span>
+                                <button onClick={() => handleGenerate({ prompt: result.originalPrompt, duration: result.originalDuration, lyricsOption: result.originalLyricsOption })} className="flex items-center justify-center gap-2 px-4 py-2 rounded-full music-gradient border border-[#c1ff72]/40 text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] hover:brightness-110 transition-all shadow-sm active:scale-95 z-20">
+                                  <Icons.RefreshCw className="w-3.5 h-3.5 shrink-0 text-[#000000]" />
+                                  <span className="text-[#000000]">{isFailed ? 'Retry' : 'Regenerate'}</span>
                                 </button>
                               </div>
                             )}
                           </div>
-                          <div className={`flex items-center gap-2 text-[10px] font-bold text-[#c1ff72] uppercase tracking-widest transition-all duration-700 ease-in-out ${isExpanded ? 'justify-center md:justify-start' : ''}`}>
-                            <span className="px-2 py-0.5 bg-[#c1ff72] text-[#000000] rounded">{(result.duration === 'Lyria 3 Clip (30s)' || result.duration === 'Clip (30s)') ? 'LYRIA 3 CLIP' : (result.duration === 'Lyria 3 Pro' || result.duration === 'Pro') ? 'LYRIA 3 PRO' : 'LYRIA 3.5'}</span>
-                            <span>• {(result.duration === 'Lyria 3 Clip (30s)' || result.duration === 'Clip (30s)') ? '30s Clip' : 'Full Song'}</span>
+                          <div className={`flex items-center gap-2 text-[18px] font-bold text-[#c1ff72] uppercase tracking-widest transition-all duration-700 ease-in-out ${isExpanded ? 'justify-center md:justify-start' : ''}`}>
+                            <span className="font-['Dancing_Script',cursive] text-[18px] normal-case tracking-normal text-[#ffffff] font-normal">Powered by</span>
+                            <span className="px-2 py-0.5 bg-[#c1ff72] text-[#000000] rounded text-[18px]">{(result.duration === 'Lyria 3 Clip (30s)' || result.duration === 'Clip (30s)') ? 'LYRIA 3 CLIP' : (result.duration === 'Lyria 3 Pro' || result.duration === 'Pro') ? 'LYRIA 3 PRO' : 'LYRIA 3.5'}</span>
                           </div>
                         </div>
 
@@ -512,9 +536,9 @@ const App: React.FC = () => {
                               <audio id={`audio-${result.id}`} onPlay={() => setIsResultPlaying(result.id)} onPause={() => setIsResultPlaying(null)} controls className="h-10 w-full rounded-2xl"><source src={result.audioUrl} /></audio>
                               <div className="flex gap-4 items-start relative">
                                 <div className="flex-1 relative group/download" onClick={e => e.stopPropagation()}>
-                                  <button onClick={(e) => { e.stopPropagation(); handleDownload(result); }} className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-white text-[10px] font-bold uppercase tracking-[0.1em] hover:brightness-110 transition-all shadow-lg shadow-[#c1ff72]/20 active:scale-95 ${isEncoding ? 'opacity-50 cursor-wait' : ''}`} disabled={isEncoding}>
-                                    {isEncoding ? <Icons.Loading className="w-4 h-4 animate-spin drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" /> : <Icons.Download className="w-4 h-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />}
-                                    <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{isEncoding ? `Processing ${Math.round(encodingProgress)}%` : 'Download'}</span>
+                                  <button onClick={(e) => { e.stopPropagation(); handleDownload(result); }} className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] hover:brightness-110 transition-all shadow-lg shadow-[#c1ff72]/20 active:scale-95 ${isEncoding ? 'opacity-50 cursor-wait' : ''}`} disabled={isEncoding}>
+                                    {isEncoding ? <Icons.Loading className="w-4 h-4 animate-spin text-[#000000]" /> : <Icons.Download className="w-4 h-4 text-[#000000]" />}
+                                    <span className="text-[#000000]">{isEncoding ? `Processing ${Math.round(encodingProgress)}%` : 'Download'}</span>
                                   </button>
                                   {!isEncoding && (
                                     <div className="absolute top-full left-0 right-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover/download:opacity-100 group-hover/download:translate-y-0 group-hover/download:pointer-events-auto transition-all duration-300 z-[60]">
@@ -545,12 +569,12 @@ const App: React.FC = () => {
                     </div>
 
                     <div className={`relative z-10 grid transition-all duration-700 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                      <div className="overflow-hidden">
+                      <div className="overflow-hidden p-1 -m-1">
                         {/* Generation Directive Box */}
                         {(result.fullPrompt || result.originalPrompt) && (
                           <div className="mb-6 space-y-3">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Generation Directive</label>
-                            <div className="bg-[#000000] border border-gray-100 rounded-[24px] p-6 text-xs font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto custom-scrollbar">
+                            <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Generation Directive</label>
+                            <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[24px] p-6 text-[16px] font-mono text-[#ffffff] whitespace-pre-wrap shadow-inner overflow-x-auto transition-all duration-200 custom-scrollbar">
                               {result.fullPrompt || result.originalPrompt}
                             </div>
                           </div>
@@ -558,8 +582,8 @@ const App: React.FC = () => {
 
                         <div className="pt-4 pb-2">
                           <div className="space-y-3">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Composition Lyrics</label>
-                            <div className="bg-[#000000] border border-gray-100 rounded-[32px] p-8 h-[240px] overflow-y-auto text-[32px] leading-[40px] text-center text-[#ffffff] italic whitespace-pre-wrap font-serif shadow-inner custom-scrollbar">{result.lyrics ? cleanLyricsForDisplay(result.lyrics) : (isGenerating ? "Synthesizing narrative..." : "Instrumental")}</div>
+                            <label className="text-[18px] font-bold uppercase tracking-widest text-gray-400 ml-1">Composition Lyrics</label>
+                            <div className="bg-[#000000] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] rounded-[32px] p-8 h-[240px] overflow-y-auto text-[32px] leading-[40px] text-center text-[#ffffff] italic whitespace-pre-wrap font-serif shadow-inner transition-all duration-200 custom-scrollbar">{result.lyrics ? cleanLyricsForDisplay(result.lyrics) : (isGenerating ? "Synthesizing narrative..." : "Instrumental")}</div>
                           </div>
                         </div>
                       </div>
