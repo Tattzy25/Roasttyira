@@ -91,11 +91,6 @@ const App: React.FC = () => {
     });
   }, [gen.results]);
 
-  const handleSelectKey = async () => {
-    if ((window as any).aistudio?.openSelectKey) {
-      await (window as any).aistudio.openSelectKey();
-    }
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -278,34 +273,12 @@ const App: React.FC = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleGenerate(); };
 
   return (
-    <div className="min-h-screen flex flex-col pb-20 overflow-x-hidden" onClick={() => setActiveSelector(null)}>
-      <nav className="sticky top-0 z-50 glass border-b border-gray-200/50 h-14 flex items-center px-6 justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 music-gradient rounded-lg flex items-center justify-center text-white font-bold text-xs">LYRIA</div>
-          <span className="font-semibold text-lg tracking-tight">Studio</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="px-3 py-1 bg-gray-100 rounded-full text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200">lyria 3.5 preview</div>
-          <button 
-            onClick={handleSelectKey} 
-            className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline"
-          >
-            api key
-          </button>
-        </div>
-      </nav>
-
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 pt-12">
-        <section className="text-center mb-16 space-y-4">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 leading-tight">Create your sound</h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">Synthesis of professional music from narrative engineering.</p>
-        </section>
-
-        <section className="bg-white rounded-[40px] p-8 md:p-12 card-shadow border border-gray-100 mb-12 relative z-10">
+    <div className="min-h-screen flex flex-col overflow-x-hidden bg-[#000000]" onClick={() => setActiveSelector(null)}>
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 pt-12 bg-[#000000]">
+        <section className="bg-[#000000] rounded-[40px] p-8 md:p-12 card-shadow border border-gray-100 mb-12 relative z-10">
           <div className="space-y-8">
             <div className="space-y-3">
-              <div className="flex justify-between items-end mb-1">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Track Directives (Ctrl + Enter to send)</label>
+              <div className="flex justify-end items-end mb-1">
                 <div className="flex items-center gap-4">
                   <button 
                     onClick={(e) => { e.stopPropagation(); setIsHelperOpen(!isHelperOpen); }}
@@ -341,7 +314,7 @@ const App: React.FC = () => {
                       }}
                       onKeyDown={handleKeyDown}
                       placeholder="Atmospheric cinematic track with heavy sub-bass..."
-                      className="w-full min-h-[128px] bg-gray-50 border border-gray-100 rounded-3xl p-6 pb-20 text-xl font-light leading-relaxed resize-none focus:bg-white transition-all pr-16"
+                      className="w-full min-h-[128px] bg-[#000000] text-[#ffffff] border border-gray-100 rounded-3xl p-6 pb-20 text-xl font-light leading-relaxed resize-none focus:bg-[#000000] transition-all pr-16"
                       style={{ overflow: 'hidden' }}
                     />
                     <div className="absolute bottom-4 left-4 flex items-center gap-2">
@@ -370,7 +343,7 @@ const App: React.FC = () => {
                       <button 
                         title="I'm feeling lucky" 
                         onClick={handleFeelingLucky} 
-                        className={`p-2.5 bg-white shadow-sm border border-gray-100 text-gray-400 hover:text-blue-500 rounded-2xl transition-transform active:scale-90 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                        className={`p-2.5 music-gradient text-white shadow-lg shadow-red-500/20 hover:brightness-110 rounded-2xl transition-all active:scale-90 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                       >
                         <Icons.Sparkles className="w-5 h-5" />
                       </button>
@@ -414,7 +387,7 @@ const App: React.FC = () => {
                   value={customLyrics}
                   onChange={(e) => setCustomLyrics(e.target.value)}
                   placeholder={`[0:00 - 0:15] Hey this is your song\n[0:15 - ] You can write any lyrics you want`}
-                  className="w-full min-h-[160px] bg-gray-50 border border-gray-100 rounded-3xl p-6 text-lg font-light leading-relaxed resize-none focus:bg-white transition-all custom-scrollbar"
+                  className="w-full min-h-[160px] bg-[#000000] text-[#ffffff] border border-gray-100 rounded-3xl p-6 text-lg font-light leading-relaxed resize-none focus:bg-[#000000] transition-all custom-scrollbar"
                 />
               </div>
             )}

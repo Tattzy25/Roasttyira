@@ -105,7 +105,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
     const currentValue = section ? (section[type as keyof HelperSection] as string) : '';
 
     return (
-      <div className="absolute top-full left-0 mt-2 z-[100] bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 min-w-[200px] animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+      <div className="absolute top-full left-0 mt-2 z-[100] bg-white text-[#000000] rounded-2xl shadow-2xl border border-gray-100 p-2 min-w-[200px] animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
         <div className="space-y-1 max-h-48 overflow-y-auto custom-scrollbar">
           {options.map(opt => (
             <button 
