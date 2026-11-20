@@ -13,12 +13,12 @@ import { ExampleSong } from './types';
  * Provides predefined lists of musical attributes to help users construct prompts.
  */
 export const PROMPT_HELPER_CONFIG = {
-  moods: ['Epic', 'Groovy', 'Melancholic', 'Aggressive', 'Ethereal', 'Uplifting', 'Cinematic', 'Nostalgic', 'Energetic', 'Dreamy', 'Dark', 'Hopeful', 'Mysterious', 'Playful', 'Tense', 'Serene'],
-  genders: ['Lo-fi', 'Rock', 'Disco', 'Robot', 'Metal', 'Choir', 'Rap', 'Jazz', 'Synthwave', 'Classical', 'Techno', 'Folk', 'R&B', 'Country', 'Ambient'],
-  themes: ['Midnight City', 'Lost Love', 'Galaxy Exploration', 'Morning Coffee', 'Cyberpunk Future', 'Ocean Waves', 'Digital Dreams', 'Summer Sunset', 'Neon Rain', 'Deep Space', 'Ancient Ruins', 'Mountain Peak', 'Urban Jungle', 'Time Travel', 'Winter Solstice'],
+  moods: ['Unhinged', 'Ruthless', 'Petty & Toxic', 'Zero-Mercy', 'Savage', 'Diabolical', 'Feral', 'Cold-Blooded', 'Passive-Aggressive', 'Drunk & Loud', 'Bitter & Petty', 'Menacing', 'Chaotic', 'Deadpan Sarcastic', 'Delusional', 'Unapologetic'],
+  genders: ['Heavy 808 Diss Rap', 'Underground Boom Bap', 'Dark Bass House', 'Aggressive Phonk', 'Silky Toxic 90s R&B', 'Heartbreak Outlaw Country', '2000s Pop-Punk Meltdown', 'Petty Gospel Choir', 'Dark Villain Trap', 'Dramatic Opera Diss', 'Spoken-Word Slam Roast', 'Mariachi Breakup Ballad', 'Industrial Metal', 'Sleazy Disco Funk', 'Sarcastic Piano Ballad'],
+  themes: ['Your Fucked-Up Birthday', 'Getting Divorced & Still Broke', 'Fantasy Football Last Place', 'The Money You Still Owe Me', 'Gold Diggin Bitch', 'Getting Fired On Your Day Off', 'Fake Clout-Chasing Friends', 'Texting Your Toxic Ex at 4:32AM', 'Your 24% APR Car Payment', 'Peaking in High School', 'Your Delusional Situationship', 'Being the Biggest Flake Alive', 'Getting Ghosted Again', 'Ruining the Group Chat', 'Your Retarded Life Decisions'],
   timestamps: ['0:10', '0:20', '0:30', '0:45', '1:00', '1:15', '1:30', '2:00'],
   bpms: ['80 BPM', '100 BPM', '120 BPM', '128 BPM', '140 BPM', '160 BPM', '172 BPM'],
-  scales: ['C Major', 'A Minor', 'G Major', 'E Minor', 'D Minor', 'F Major', 'Blues Scale', 'Phrygian']
+  scales: ['Evil Villain Key', 'Dark & Menacing Key', 'Fake Happy Party Key', 'Heartbroken Sad Key', 'Horror Movie Tension', 'Grimy Street Blues', 'Dramatic Funeral Key', 'Drug Addict Clown Key']
 };
 
 export const EXAMPLE_SONGS: ExampleSong[] = [

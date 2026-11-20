@@ -337,7 +337,9 @@ const App: React.FC = () => {
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Model / Length</label>
                 <div className="flex bg-gray-100 p-1 rounded-2xl w-fit">
                   {(['Lyria 3.5', 'Lyria 3 Pro', 'Lyria 3 Clip (30s)'] as Duration[]).map((opt) => (
-                    <button key={opt} onClick={() => setDuration(opt)} className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${duration === opt ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-gray-800'}`}>{opt}</button>
+                    <button key={opt} onClick={() => setDuration(opt)} className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${duration === opt ? 'music-gradient text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
+                      <span className={duration === opt ? 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]' : ''}>{opt}</span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -345,7 +347,9 @@ const App: React.FC = () => {
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Lyrics</label>
                 <div className="flex bg-gray-100 p-1 rounded-2xl w-fit">
                   {(['Auto', 'Custom', 'Instrumental'] as LyricsOption[]).map((opt) => (
-                    <button key={opt} onClick={() => setLyricsOption(opt)} className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${lyricsOption === opt ? 'bg-white shadow-sm text-black' : 'text-gray-500'}`}>{opt}</button>
+                    <button key={opt} onClick={() => setLyricsOption(opt)} className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${lyricsOption === opt ? 'music-gradient text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
+                      <span className={lyricsOption === opt ? 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]' : ''}>{opt}</span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -456,6 +460,28 @@ const App: React.FC = () => {
                     <div className={`relative z-[30] flex transition-all duration-700 ease-in-out gap-6 items-center ${isExpanded ? 'flex-col md:flex-row mb-8' : 'flex-row'}`} onClick={() => !isExpanded && toggleExpand(result.id)} style={{ cursor: isExpanded ? 'default' : 'pointer' }}>
                       <div className={`relative shrink-0 transition-all duration-700 ease-in-out rounded-3xl overflow-hidden shadow-2xl ${isExpanded ? 'w-48 h-48 md:w-56 md:h-56' : 'w-16 h-16'}`}>
                         <img src={result.coverImageUrl || "https://model.tattty.com/ROASTTID-BEATZ.png"} alt={result.title || "Roasttid Beatz"} className="w-full h-full object-cover" />
+                        {result.audioUrl && !isEncoding && !isGenerating && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const audio = document.getElementById(`audio-${result.id}`) as HTMLAudioElement | null;
+                              if (audio) {
+                                if (audio.paused) audio.play();
+                                else audio.pause();
+                              }
+                            }}
+                            className="absolute inset-0 bg-black/20 hover:bg-black/40 transition-all flex items-center justify-center group/play"
+                            aria-label={isResultPlaying === result.id ? "Pause song" : "Play song"}
+                          >
+                            <div className={`${isExpanded ? 'w-16 h-16' : 'w-10 h-10'} bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-black shadow-xl transition-transform group-hover/play:scale-110 active:scale-95`}>
+                              {isResultPlaying === result.id ? (
+                                <Icons.Pause className={isExpanded ? 'w-8 h-8' : 'w-5 h-5'} />
+                              ) : (
+                                <Icons.Play className={isExpanded ? 'w-8 h-8 ml-1' : 'w-5 h-5 ml-0.5'} />
+                              )}
+                            </div>
+                          </button>
+                        )}
                         {(isEncoding || isGenerating) && <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center"><Icons.Loading className={`${isExpanded ? 'w-12 h-12' : 'w-6 h-6'} text-[#c1ff72] animate-spin`} /></div>}
                       </div>
 
@@ -533,7 +559,7 @@ const App: React.FC = () => {
                         <div className="pt-4 pb-2">
                           <div className="space-y-3">
                             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Composition Lyrics</label>
-                            <div className="bg-[#000000] border border-gray-100 rounded-[32px] p-8 h-[240px] overflow-y-auto text-base text-[#ffffff] italic whitespace-pre-wrap font-serif shadow-inner custom-scrollbar">{result.lyrics ? cleanLyricsForDisplay(result.lyrics) : (isGenerating ? "Synthesizing narrative..." : "Instrumental")}</div>
+                            <div className="bg-[#000000] border border-gray-100 rounded-[32px] p-8 h-[240px] overflow-y-auto text-[32px] leading-[40px] text-center text-[#ffffff] italic whitespace-pre-wrap font-serif shadow-inner custom-scrollbar">{result.lyrics ? cleanLyricsForDisplay(result.lyrics) : (isGenerating ? "Synthesizing narrative..." : "Instrumental")}</div>
                           </div>
                         </div>
                       </div>
