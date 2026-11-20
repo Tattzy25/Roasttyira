@@ -307,9 +307,12 @@ const App: React.FC = () => {
                     <button 
                       title="I'm feeling lucky" 
                       onClick={handleFeelingLucky} 
-                      className={`p-2.5 music-gradient text-[#000000] shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 rounded-2xl transition-all active:scale-90 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                      className={`p-[2px] music-gradient rounded-full shadow-lg shadow-[#c1ff72]/20 hover:brightness-110 transition-all active:scale-95 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                     >
-                      <Icons.Sparkles className="w-5 h-5 text-[#000000]" />
+                      <span className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-sm font-bold">
+                        <Icons.Sparkles className="w-4 h-4 text-[#c1ff72] shrink-0" />
+                        I'm Feeling Lucky
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -371,13 +374,15 @@ const App: React.FC = () => {
             <button 
               onClick={() => handleGenerate()} 
               disabled={(!prompt.trim() && selectedImages.length === 0) || CONFIG.IS_MAINTENANCE_MODE} 
-              className={`w-full py-5 rounded-3xl text-lg font-bold text-[#000000] transition-all shadow-xl music-gradient shadow-[#c1ff72]/20 cursor-pointer ${
+              className={`w-full p-[3px] rounded-full transition-all shadow-xl music-gradient shadow-[#c1ff72]/20 hover:brightness-110 cursor-pointer ${
                 ((!prompt.trim() && selectedImages.length === 0) || CONFIG.IS_MAINTENANCE_MODE)
                   ? '' 
                   : `active:scale-[0.98] active:brightness-110 ${isTriggering ? 'scale-[0.98] brightness-125 ring-4 ring-[#c1ff72]/50' : ''}`
               }`}
             >
-              <span className="text-[#000000] text-[41px]">Create Roasttid Beatz</span>
+              <span className="flex items-center justify-center w-full py-4 px-6 rounded-full bg-[#000000] border border-[#000000] text-[#ffffff] text-[41px] font-bold">
+                Create Roasttid Beatz
+              </span>
             </button>
           </div>
         </section>
@@ -424,7 +429,7 @@ const App: React.FC = () => {
                       <div className="flex gap-4 items-start relative">
                         <div className="flex-1 relative">
                           <button disabled className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] shadow-lg shadow-[#c1ff72]/20 cursor-pointer">
-                            <Icons.Download className="w-4 h-4 text-[#000000]" />
+                            <Icons.Download className="w-4 h-4 text-[#000000] shrink-0" />
                             <span className="text-[#000000]">Download</span>
                           </button>
                         </div>
@@ -537,7 +542,7 @@ const App: React.FC = () => {
                               <div className="flex gap-4 items-start relative">
                                 <div className="flex-1 relative group/download" onClick={e => e.stopPropagation()}>
                                   <button onClick={(e) => { e.stopPropagation(); handleDownload(result); }} className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl music-gradient text-[#000000] text-[10px] font-bold uppercase tracking-[0.1em] hover:brightness-110 transition-all shadow-lg shadow-[#c1ff72]/20 active:scale-95 ${isEncoding ? 'opacity-50 cursor-wait' : ''}`} disabled={isEncoding}>
-                                    {isEncoding ? <Icons.Loading className="w-4 h-4 animate-spin text-[#000000]" /> : <Icons.Download className="w-4 h-4 text-[#000000]" />}
+                                    {isEncoding ? <Icons.Loading className="w-4 h-4 animate-spin text-[#000000] shrink-0" /> : <Icons.Download className="w-4 h-4 text-[#000000] shrink-0" />}
                                     <span className="text-[#000000]">{isEncoding ? `Processing ${Math.round(encodingProgress)}%` : 'Download'}</span>
                                   </button>
                                   {!isEncoding && (
