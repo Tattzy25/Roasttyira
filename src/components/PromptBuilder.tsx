@@ -113,7 +113,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
                 updateHelperSection(sectionId, { [type]: opt }); 
                 setActiveSelector(null); 
               }}
-              className={`w-full text-left px-4 py-2 rounded-xl text-sm transition-colors ${currentValue === opt ? 'bg-blue-50 text-[#000000] font-bold' : 'hover:bg-gray-50 text-[#000000]'}`}
+              className={`w-full text-left px-4 py-2 rounded-xl text-sm transition-colors ${currentValue === opt ? 'bg-gray-100 text-[#000000] font-bold' : 'hover:bg-gray-50 text-[#000000]'}`}
             >
               {opt}
             </button>
@@ -124,7 +124,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
             <input 
               type="text" 
               placeholder="Custom..." 
-              className="flex-1 bg-gray-50 text-[#000000] border-none rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-400"
+              className="flex-1 bg-gray-50 text-[#000000] border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-[#000000] focus:border-[#000000]"
               value={customInputValue}
               onChange={(e) => setCustomInputValue(e.target.value)}
               onKeyDown={(e) => {
@@ -144,7 +144,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
                   setActiveSelector(null);
                 }
               }}
-              className="px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg"
+              className="px-3 py-1.5 bg-[#000000] text-white text-[10px] font-bold rounded-lg hover:bg-gray-800 transition-colors"
             >
               Set
             </button>
@@ -168,12 +168,12 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
         {value ? (
           <button 
             onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === type ? null : { sectionId: s.id, type }); }}
-            className={`px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-blue-400 transition-all text-sm group/pill`}
+            className={`px-3 py-1 bg-white border rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-[#c1ff72] transition-all text-sm group/pill ${activeSelector?.sectionId === s.id && activeSelector?.type === type ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}
           >
             {value} <Icons.ChevronDown className="w-3 h-3 opacity-50" />
             <span 
               onClick={(e) => { e.stopPropagation(); updateHelperSection(s.id, { [type]: undefined }); }}
-              className="ml-1 text-blue-300 hover:text-red-400 transition-colors"
+              className="ml-1 text-gray-400 hover:text-red-400 transition-colors"
             >
               <Icons.X className="w-3.5 h-3.5" />
             </span>
@@ -181,7 +181,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
         ) : (
           <button 
             onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === type ? null : { sectionId: s.id, type }); }}
-            className="px-3 py-1 bg-white border border-dashed border-gray-200 rounded-lg text-[#000000] font-medium hover:border-blue-300 hover:text-[#000000] transition-all text-xs flex items-center gap-1.5"
+            className={`px-3 py-1 bg-white border border-dashed rounded-lg text-[#000000] font-medium hover:border-[#c1ff72] hover:text-[#000000] transition-all text-xs flex items-center gap-1.5 ${activeSelector?.sectionId === s.id && activeSelector?.type === type ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}
           >
             <Icons.Sparkles className="w-3 h-3 opacity-50" />
             {label}
@@ -193,27 +193,27 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
   };
 
   return (
-    <div className="w-full bg-[#000000] text-[#ffffff] border border-blue-100 rounded-3xl p-8 space-y-6 transition-all" onClick={e => e.stopPropagation()}>
+    <div className="w-full bg-[#000000] text-[#ffffff] border border-gray-100 rounded-3xl p-8 space-y-6 transition-all" onClick={e => e.stopPropagation()}>
       {helperSections.map((s) => (
         <div key={s.id} className="flex flex-wrap items-center gap-x-3 gap-y-4 text-xl font-light leading-relaxed">
           {s.type === 'main' ? (
             <>
               <span className="text-gray-400">Create a</span>
               <div className="relative">
-                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'mood' ? null : { sectionId: s.id, type: 'mood' }); }} className={`px-4 py-1.5 bg-white border rounded-xl text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-blue-400 transition-all ${activeSelector?.sectionId === s.id && activeSelector?.type === 'mood' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-blue-200'}`}>
+                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'mood' ? null : { sectionId: s.id, type: 'mood' }); }} className={`px-4 py-1.5 bg-white border rounded-xl text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-[#c1ff72] transition-all ${activeSelector?.sectionId === s.id && activeSelector?.type === 'mood' ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}>
                   {s.mood} <Icons.ChevronDown className="w-3.5 h-3.5 opacity-50" />
                 </button>
                 {renderSelector(s.id, 'mood')}
               </div>
               <div className="relative">
-                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'gender' ? null : { sectionId: s.id, type: 'gender' }); }} className={`px-4 py-1.5 bg-white border rounded-xl text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-blue-400 transition-all ${activeSelector?.sectionId === s.id && activeSelector?.type === 'gender' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-blue-200'}`}>
+                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'gender' ? null : { sectionId: s.id, type: 'gender' }); }} className={`px-4 py-1.5 bg-white border rounded-xl text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-[#c1ff72] transition-all ${activeSelector?.sectionId === s.id && activeSelector?.type === 'gender' ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}>
                   {s.gender} <Icons.ChevronDown className="w-3.5 h-3.5 opacity-50" />
                 </button>
                 {renderSelector(s.id, 'gender')}
               </div>
               <span className="text-gray-400">song about</span>
               <div className="relative">
-                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'theme' ? null : { sectionId: s.id, type: 'theme' }); }} className={`px-4 py-1.5 bg-white border rounded-xl text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-blue-400 transition-all ${activeSelector?.sectionId === s.id && activeSelector?.type === 'theme' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-blue-200'}`}>
+                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'theme' ? null : { sectionId: s.id, type: 'theme' }); }} className={`px-4 py-1.5 bg-white border rounded-xl text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-[#c1ff72] transition-all ${activeSelector?.sectionId === s.id && activeSelector?.type === 'theme' ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}>
                   {s.theme} <Icons.ChevronDown className="w-3.5 h-3.5 opacity-50" />
                 </button>
                 {renderSelector(s.id, 'theme')}
@@ -225,20 +225,20 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
             <>
               <span className="text-gray-400">[From </span>
               <div className="relative">
-                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'timestamp' ? null : { sectionId: s.id, type: 'timestamp' }); }} className="px-3 py-1 bg-white border border-blue-200 rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-blue-400 transition-all text-sm">
+                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'timestamp' ? null : { sectionId: s.id, type: 'timestamp' }); }} className={`px-3 py-1 bg-white border rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-[#c1ff72] transition-all text-sm ${activeSelector?.sectionId === s.id && activeSelector?.type === 'timestamp' ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}>
                   {s.timestamp} <Icons.ChevronDown className="w-3 h-3 opacity-50" />
                 </button>
                 {renderSelector(s.id, 'timestamp')}
               </div>
               <span className="text-gray-400">] the song transitions to a </span>
               <div className="relative">
-                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'mood' ? null : { sectionId: s.id, type: 'mood' }); }} className="px-3 py-1 bg-white border border-blue-200 rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-blue-400 transition-all text-sm">
+                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'mood' ? null : { sectionId: s.id, type: 'mood' }); }} className={`px-3 py-1 bg-white border rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-[#c1ff72] transition-all text-sm ${activeSelector?.sectionId === s.id && activeSelector?.type === 'mood' ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}>
                   {s.mood} <Icons.ChevronDown className="w-3 h-3 opacity-50" />
                 </button>
                 {renderSelector(s.id, 'mood')}
               </div>
               <div className="relative">
-                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'gender' ? null : { sectionId: s.id, type: 'gender' }); }} className="px-3 py-1 bg-white border border-blue-200 rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-blue-400 transition-all text-sm">
+                <button onClick={(e) => { e.stopPropagation(); setActiveSelector(activeSelector?.sectionId === s.id && activeSelector?.type === 'gender' ? null : { sectionId: s.id, type: 'gender' }); }} className={`px-3 py-1 bg-white border rounded-lg text-[#000000] font-bold shadow-sm flex items-center gap-2 hover:border-[#c1ff72] transition-all text-sm ${activeSelector?.sectionId === s.id && activeSelector?.type === 'gender' ? 'border-[#c1ff72] ring-2 ring-[#c1ff72]/60' : 'border-gray-200'}`}>
                   {s.gender} <Icons.ChevronDown className="w-3 h-3 opacity-50" />
                 </button>
                 {renderSelector(s.id, 'gender')}
@@ -271,7 +271,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
             <button 
               title="By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our Prohibited Use Policy. Please note that uploads, including those from Google Workspace, may be used to develop and improve Google products and services in accordance with our terms."
               onClick={(e) => { e.stopPropagation(); onImageSelect(); }}
-              className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl font-bold transition-all border shadow-sm bg-white text-[#000000] border-blue-100 hover:bg-blue-50`}
+              className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl font-bold transition-all border shadow-sm bg-white text-[#000000] border-gray-200 hover:bg-gray-100`}
             >
               <Icons.Camera className="w-5 h-5" />
               Add a picture {selectedImages.length > 0 ? `(${selectedImages.length}/10)` : ''}
@@ -279,7 +279,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
           )}
           <button 
             onClick={(e) => { e.stopPropagation(); addHelperSection(); }}
-            className="flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-[#000000] border border-blue-100 font-bold shadow-sm hover:bg-blue-50 transition-all"
+            className="flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-[#000000] border border-gray-200 font-bold shadow-sm hover:bg-gray-100 transition-all"
           >
             <Icons.Sparkles className="w-5 h-5" />
             Add another section to the song

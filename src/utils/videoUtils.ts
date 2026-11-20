@@ -27,7 +27,7 @@ export const handleDownloadVideo = async (
   onComplete: () => void
 ) => {
   logFunctionCall('handleDownloadVideo', { resultId: result.id, withLyrics });
-  if (!result.audioUrl || !result.coverImageUrl) {
+  if (!result.audioUrl) {
     onComplete();
     return;
   }
@@ -47,10 +47,21 @@ export const handleDownloadVideo = async (
     return;
   }
 
+  const coverUrl = result.coverImageUrl || "https://model.tattty.com/ROASTTID-BEATZ.png";
   const img = new Image();
   img.crossOrigin = "anonymous";
-  img.src = result.coverImageUrl;
-  await new Promise(resolve => img.onload = resolve);
+  let hasValidCover = false;
+  await new Promise<void>(resolve => {
+    img.onload = () => {
+      hasValidCover = true;
+      resolve();
+    };
+    img.onerror = () => {
+      console.warn('[Video Export] Cover image failed to load (likely CORS):', coverUrl);
+      resolve();
+    };
+    img.src = coverUrl;
+  });
 
   const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
   const source = audioCtx.createMediaElementSource(audio);
@@ -139,20 +150,22 @@ export const handleDownloadVideo = async (
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    if (withLyrics) {
-      ctx.filter = 'blur(40px)';
-      ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
-      ctx.filter = 'none';
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    if (hasValidCover) {
+      if (withLyrics) {
+        ctx.filter = 'blur(40px)';
+        ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+        ctx.filter = 'none';
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+      }
+
+      // Draw cover image on the left (or center if no lyrics)
+      ctx.drawImage(img, 0, 0, 1080, 1080);
+
+      // Add a darker overlay for readability
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.fillRect(0, 0, 1080, 1080);
     }
-
-    // Draw cover image on the left (or center if no lyrics)
-    ctx.drawImage(img, 0, 0, 1080, 1080);
-
-    // Add a darker overlay for readability
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.fillRect(0, 0, 1080, 1080);
 
     // Get frequency data for spectrum
     analyser.getByteFrequencyData(dataArray);
