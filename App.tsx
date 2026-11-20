@@ -40,7 +40,6 @@ const App: React.FC = () => {
   const [isTriggering, setIsTriggering] = useState(false);
 
   // Helper Mode States
-  const [isHelperOpen, setIsHelperOpen] = useState(false);
   const [helperSections, setHelperSections] = useState<HelperSection[]>([
     { 
       id: 'initial', 
@@ -65,23 +64,21 @@ const App: React.FC = () => {
 
   // Sync Helper sections to Prompt
   useEffect(() => {
-    if (isHelperOpen) {
-      const generated = helperSections.map(s => {
-        const scaleInfo = s.scale ? ` in the scale of ${s.scale.toLowerCase()}` : '';
+    const generated = helperSections.map(s => {
+      const scaleInfo = s.scale ? ` in the scale of ${s.scale.toLowerCase()}` : '';
 
-        if (s.type === 'main') {
-          const bpmInfo = s.bpm ? ` at ${s.bpm.toLowerCase()}` : '';
-          const musicDetails = `${bpmInfo}${scaleInfo}`;
-          return `Create a ${s.mood?.toLowerCase()} ${s.gender?.toLowerCase()} song about ${s.theme?.toLowerCase()}${musicDetails}.`;
-        } else {
-          const musicDetails = `${scaleInfo}`;
-          return `[From ${s.timestamp}] the song transitions to a ${s.mood?.toLowerCase()} ${s.gender?.toLowerCase()} song${musicDetails}.`;
-        }
-      }).join('\n');
-      setPrompt(generated);
-      setIsPromptManual(false); // Helper sync is not "manual typing"
-    }
-  }, [isHelperOpen, helperSections]);
+      if (s.type === 'main') {
+        const bpmInfo = s.bpm ? ` at ${s.bpm.toLowerCase()}` : '';
+        const musicDetails = `${bpmInfo}${scaleInfo}`;
+        return `Create a ${s.mood?.toLowerCase()} ${s.gender?.toLowerCase()} song about ${s.theme?.toLowerCase()}${musicDetails}.`;
+      } else {
+        const musicDetails = `${scaleInfo}`;
+        return `[From ${s.timestamp}] the song transitions to a ${s.mood?.toLowerCase()} ${s.gender?.toLowerCase()} song${musicDetails}.`;
+      }
+    }).join('\n');
+    setPrompt(generated);
+    setIsPromptManual(false); // Helper sync is not "manual typing"
+  }, [helperSections]);
 
   useEffect(() => {
     Object.values(consoleRefs.current).forEach(el => {
@@ -129,8 +126,7 @@ const App: React.FC = () => {
     const randomGender = getRandomItem(PROMPT_HELPER_CONFIG.genders);
     const randomTheme = getRandomItem(PROMPT_HELPER_CONFIG.themes);
     
-    setPrompt(`Create a ${randomMood.toLowerCase()} ${randomGender.toLowerCase()} song about ${randomTheme.toLowerCase()}.`);
-    setIsPromptManual(false); // Mark as generated
+    setHelperSections(prev => prev.map(s => s.type === 'main' ? { ...s, mood: randomMood, gender: randomGender, theme: randomTheme } : s));
   };
 
   const updateHelperSection = (id: string, updates: Partial<HelperSection>) => {
@@ -278,78 +274,62 @@ const App: React.FC = () => {
         <section className="bg-[#000000] rounded-[40px] p-8 md:p-12 card-shadow border border-gray-100 mb-12 relative z-10">
           <div className="space-y-8">
             <div className="space-y-3">
-              <div className="flex justify-end items-end mb-1">
-                <div className="flex items-center gap-4">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setIsHelperOpen(!isHelperOpen); }}
-                    className={`text-[11px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors ${isHelperOpen ? 'text-blue-600' : 'text-blue-400 hover:text-blue-600'}`}
-                  >
-                    <Icons.Sparkles className="w-3.5 h-3.5" />
-                    {isHelperOpen ? 'Free Text' : 'Help me create'}
-                  </button>
-                </div>
-              </div>
-              
-              <div className="relative group/prompt min-h-[160px]">
+              <div className="relative group/prompt min-h-[160px] space-y-4">
                 <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" multiple className="hidden" />
-                {isHelperOpen ? (
-                  <PromptBuilder
-                    isHelperOpen={isHelperOpen}
-                    helperSections={helperSections}
-                    setHelperSections={setHelperSections}
-                    activeSelector={activeSelector}
-                    setActiveSelector={setActiveSelector}
-                    selectedImages={selectedImages}
-                    onImageSelect={() => fileInputRef.current?.click()}
-                    onImageRemove={removeImage}
+                <div className="relative">
+                  <textarea
+                    ref={promptTextareaRef}
+                    value={prompt}
+                    onChange={(e) => {
+                      setPrompt(e.target.value);
+                      setIsPromptManual(true);
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Atmospheric cinematic track with heavy sub-bass..."
+                    className="w-full min-h-[128px] bg-[#000000] text-[#ffffff] border border-gray-100 rounded-3xl p-6 pb-20 text-xl font-light leading-relaxed resize-none focus:bg-[#000000] transition-all pr-16"
+                    style={{ overflow: 'hidden' }}
                   />
-                ) : (
-                  <div className="relative">
-                    <textarea
-                      ref={promptTextareaRef}
-                      value={prompt}
-                      onChange={(e) => {
-                        setPrompt(e.target.value);
-                        setIsPromptManual(true);
-                      }}
-                      onKeyDown={handleKeyDown}
-                      placeholder="Atmospheric cinematic track with heavy sub-bass..."
-                      className="w-full min-h-[128px] bg-[#000000] text-[#ffffff] border border-gray-100 rounded-3xl p-6 pb-20 text-xl font-light leading-relaxed resize-none focus:bg-[#000000] transition-all pr-16"
-                      style={{ overflow: 'hidden' }}
-                    />
-                    <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                      {selectedImages.length < 10 && (
-                        <button 
-                          title="By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our Prohibited Use Policy. Please note that uploads, including those from Google Workspace, may be used to develop and improve Google products and services in accordance with our terms." 
-                          onClick={() => fileInputRef.current?.click()} 
-                          className={`transition-all shadow-sm border border-gray-100 flex items-center justify-center ${selectedImages.length > 0 ? 'p-2.5 rounded-2xl bg-blue-500 text-white' : 'px-4 py-2.5 rounded-2xl bg-white text-gray-500 hover:text-blue-600 gap-2 text-sm font-medium'}`}
-                        >
-                          <Icons.Camera className="w-5 h-5" />
-                          {selectedImages.length === 0 && <span>Add image references</span>}
-                        </button>
-                      )}
-                      {selectedImages.length > 0 && (
-                        <div className="flex gap-2">
-                          {selectedImages.map((img, idx) => (
-                            <div key={idx} className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-white shadow-lg animate-in zoom-in duration-200">
-                              <img src={img.previewUrl} className="w-full h-full object-cover" />
-                              <button onClick={() => removeImage(idx)} className="absolute top-0 right-0 w-4 h-4 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur hover:bg-black"><Icons.X className="w-2.5 h-2.5" /></button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className="absolute bottom-4 right-4">
+                  <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                    {selectedImages.length < 10 && (
                       <button 
-                        title="I'm feeling lucky" 
-                        onClick={handleFeelingLucky} 
-                        className={`p-2.5 music-gradient text-white shadow-lg shadow-red-500/20 hover:brightness-110 rounded-2xl transition-all active:scale-90 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                        title="By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our Prohibited Use Policy. Please note that uploads, including those from Google Workspace, may be used to develop and improve Google products and services in accordance with our terms." 
+                        onClick={() => fileInputRef.current?.click()} 
+                        className={`transition-all shadow-sm border border-gray-100 flex items-center justify-center ${selectedImages.length > 0 ? 'p-2.5 rounded-2xl bg-blue-500 text-white' : 'px-4 py-2.5 rounded-2xl bg-white text-gray-500 hover:text-blue-600 gap-2 text-sm font-medium'}`}
                       >
-                        <Icons.Sparkles className="w-5 h-5" />
+                        <Icons.Camera className="w-5 h-5" />
+                        {selectedImages.length === 0 && <span>Add image references</span>}
                       </button>
-                    </div>
+                    )}
+                    {selectedImages.length > 0 && (
+                      <div className="flex gap-2">
+                        {selectedImages.map((img, idx) => (
+                          <div key={idx} className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-white shadow-lg animate-in zoom-in duration-200">
+                            <img src={img.previewUrl} className="w-full h-full object-cover" />
+                            <button onClick={() => removeImage(idx)} className="absolute top-0 right-0 w-4 h-4 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur hover:bg-black"><Icons.X className="w-2.5 h-2.5" /></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div className="absolute bottom-4 right-4">
+                    <button 
+                      title="I'm feeling lucky" 
+                      onClick={handleFeelingLucky} 
+                      className={`p-2.5 music-gradient text-white shadow-lg shadow-red-500/20 hover:brightness-110 rounded-2xl transition-all active:scale-90 ${isPromptManual && prompt.trim() !== '' ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                    >
+                      <Icons.Sparkles className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                <PromptBuilder
+                  helperSections={helperSections}
+                  setHelperSections={setHelperSections}
+                  activeSelector={activeSelector}
+                  setActiveSelector={setActiveSelector}
+                  selectedImages={selectedImages}
+                  onImageSelect={() => fileInputRef.current?.click()}
+                  onImageRemove={removeImage}
+                />
                 <div className="mt-3 px-1 text-[11px] text-gray-400 leading-relaxed space-y-1">
                   <p>
                     By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our <a href="https://policies.google.com/terms/generative-ai/use-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Prohibited Use Policy</a>.
