@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Icons } from '../../constants';
 
 export const ROASTTID_ACCOUNT_SIGN_IN_URL = 'https://account.roasttid.com';
-export const ROASTTID_STORE_DOMAIN = 'https://roasttid.com';
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -55,13 +54,6 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
       >
         <div className="h-[3px] w-full music-gradient" />
 
-        {/* Shopify Storefront Web Component store context */}
-        {React.createElement('shopify-store', {
-          'store-domain': ROASTTID_STORE_DOMAIN,
-          country: 'US',
-          language: 'en',
-        })}
-
         <div className="flex items-start justify-between gap-4 px-5 sm:px-7 pt-5 sm:pt-6 pb-4 border-b border-white/15">
           <div className="min-w-0 space-y-1.5">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#c1ff72]">
@@ -95,7 +87,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
               className="rounded-2xl border border-[#c1ff72]/60 bg-[#c1ff72]/10 px-4 py-3.5 space-y-3"
             >
               <p className="text-xs sm:text-sm text-white leading-relaxed">
-                Roasttid sign-in opened in a new tab. Once you&apos;re signed in, return to the studio and hit{' '}
+                Roasttid sign-in opened in a new tab. Once you&apos;re signed in, return here and hit{' '}
                 <span className="font-bold text-[#c1ff72]">Create Roasttid Beatz</span>.
               </p>
               <button
@@ -108,7 +100,6 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
             </div>
           )}
 
-          {/* Direct Sign-In CTA (opens in a new tab so Shopify frame-ancestors CSP never blocks iframes) */}
           <a
             href={ROASTTID_ACCOUNT_SIGN_IN_URL}
             target="_blank"
@@ -123,34 +114,8 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
             </span>
           </a>
 
-          {/* Native Shopify Account Web Component themed to Roasttid */}
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/15 bg-white/[0.03] px-4 py-3">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-white">Shop / Customer Account</p>
-              <p className="text-[11px] text-white/55 truncate">account.roasttid.com</p>
-            </div>
-            <div className="shrink-0 roasttid-shopify-account">
-              {React.createElement(
-                'shopify-account',
-                {
-                  menu: 'customer-account-main-menu',
-                  'sign-in-url': ROASTTID_ACCOUNT_SIGN_IN_URL,
-                },
-                React.createElement(
-                  'span',
-                  {
-                    slot: 'signed-out-avatar',
-                    className:
-                      'inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-[#c1ff72]/50 bg-[#000000] text-xs font-bold text-[#c1ff72] hover:bg-[#c1ff72] hover:text-[#000000] transition-colors cursor-pointer',
-                  },
-                  'Account'
-                )
-              )}
-            </div>
-          </div>
-
           <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-white/10 text-xs text-white/50">
-            <span>Prompt &amp; lyrics stay saved in this tab</span>
+            <span>account.roasttid.com · Opens in a new tab</span>
             <button
               type="button"
               onClick={onClose}
@@ -161,29 +126,6 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
           </div>
         </div>
       </div>
-
-      <style>{`
-        .roasttid-shopify-account shopify-account {
-          --shopify-account-signed-in-avatar-size: 40px;
-          --shopify-account-signed-in-avatar-color-background: #c1ff72;
-          --shopify-account-signed-in-avatar-color-text: #000000;
-          --shopify-account-font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          --shopify-account-font-heading-weight: 800;
-          --shopify-account-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          --shopify-account-font-body-weight: 500;
-          --shopify-account-radius-base: 16px;
-          --shopify-account-radius-dialog: 24px;
-          --shopify-account-radius-button: 99px;
-          --shopify-account-radius-button-small: 10px;
-          --shopify-account-radius-input: 12px;
-          --shopify-account-dialog-position-top: 56px;
-          --shopify-account-color-background: #0a0a0a;
-          --shopify-account-color-text: #ffffff;
-          --shopify-account-color-accent: #c1ff72;
-          --shopify-account-color-accent-text: #000000;
-          --shopify-account-color-border: rgba(255, 255, 255, 0.2);
-        }
-      `}</style>
     </div>
   );
 };

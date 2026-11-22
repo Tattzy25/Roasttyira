@@ -332,7 +332,7 @@ async function startServer() {
       if (!storedOp) {
         return res.status(404).json({ error: "Video operation not found on server." });
       }
-      const op = await ai.operations.getVideosOperation({ operation: storedOp });
+      const op = await ai.operations.getVideosOperation({ operation: storedOp.op });
       if (op.name) {
         videoOps.set(op.name, { op, ownerKey: getClientKey(req) });
       }
