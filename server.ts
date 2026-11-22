@@ -5,7 +5,20 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { createServer as createViteServer } from "vite";
+const envPath = path.join(process.cwd(), ".env");
+if (fs.existsSync(envPath)) {
+  for (const rawLine of fs.readFileSync(envPath, "utf-8").split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eqIdx = line.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = line.slice(0, eqIdx).trim();
+    const val = line.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, "");
+    if (key && !(key in process.env)) {
+      process.env[key] = val;
+    }
+  }
+}
 import { GoogleGenAI } from "@google/genai";
 
 class BoundedMap<K, V> extends Map<K, V> {
@@ -349,14 +362,19 @@ async function startServer() {
     res.status(404).json({ error: "Video download is not enabled for this applet." });
   });
 
-  if (process.env.NODE_ENV !== "production") {
+  const distPath = path.join(process.cwd(), "dist");
+  const isProd =
+    process.env.NODE_ENV === "production" ||
+    (Boolean(process.argv[1]?.endsWith("server.cjs")) && fs.existsSync(path.join(distPath, "index.html")));
+
+  if (!isProd) {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
     app.use(["/server.cjs", "/server.cjs.map"], (_req: any, res: any) => res.status(404).end());
     app.use(express.static(distPath));
     app.use((_req, res) => {

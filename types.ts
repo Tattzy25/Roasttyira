@@ -19,6 +19,7 @@ export interface SongResult {
   status: GenerationStatus;
   logs: string[];
   audioUrl: string | null;
+  audioMimeType?: string;
   coverImageUrl: string | null;
   title: string | null;
   lyrics: string;

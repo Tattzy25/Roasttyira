@@ -27,6 +27,15 @@ export interface HelperSection {
 
 type SelectorType = 'mood' | 'gender' | 'theme' | 'timestamp' | 'bpm' | 'scale';
 
+const SELECTOR_LABELS: Record<SelectorType, string> = {
+  mood: 'Mood selector',
+  gender: 'Genre and style selector',
+  theme: 'Song topic selector',
+  timestamp: 'Transition timestamp selector',
+  bpm: 'Tempo BPM selector',
+  scale: 'Musical key and scale selector',
+};
+
 interface PromptBuilderProps {
   helperSections: HelperSection[];
   setHelperSections: React.Dispatch<React.SetStateAction<HelperSection[]>>;
@@ -98,7 +107,8 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
       return;
     }
 
-    const rect = e.currentTarget.getBoundingClientRect();
+    const anchorEl = e.currentTarget.closest('[data-pill-anchor]') || e.currentTarget;
+    const rect = anchorEl.getBoundingClientRect();
     const menuWidth = Math.min(260, window.innerWidth - 24);
     const maxLeft = window.innerWidth - 12 - menuWidth;
     const clampedLeft = Math.max(12, Math.min(rect.left, maxLeft));
@@ -122,20 +132,33 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
 
     const section = helperSections.find(s => s.id === sectionId);
     const currentValue = section ? (section[type as keyof HelperSection] as string) : '';
+    const selectorLabel = SELECTOR_LABELS[type];
+    const listboxId = `selector-listbox-${sectionId}-${type}`;
 
     return (
       <div
+        role="region"
+        aria-label={`${selectorLabel} options`}
         className="absolute top-full mt-2 z-[150] w-[260px] max-w-[calc(100vw-24px)] p-[2px] music-gradient rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.95),0_0_24px_rgba(193,255,114,0.28)]"
         style={{ left: `${menuOffsetX}px` }}
         onClick={e => e.stopPropagation()}
       >
         <div className="bg-[#000000] text-[#ffffff] rounded-[14px] p-2">
-          <div className="space-y-1 max-h-56 overflow-y-auto custom-scrollbar">
+          <div
+            id={listboxId}
+            role="listbox"
+            aria-label={`${selectorLabel} list`}
+            tabIndex={0}
+            className="space-y-1 max-h-56 overflow-y-auto custom-scrollbar"
+          >
             {options.map(opt => {
               const isSelected = currentValue === opt;
               return (
                 <button
                   type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  aria-label={opt}
                   key={opt}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -155,6 +178,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
             <div className="flex items-center gap-2 p-0.5">
               <input
                 type="text"
+                aria-label={`Custom ${selectorLabel.toLowerCase()} input`}
                 placeholder="Custom..."
                 className="flex-1 min-w-0 bg-[#0a0a0a] text-[#ffffff] placeholder:text-white/40 border border-white/30 rounded-xl px-3 py-1.5 text-sm"
                 value={customInputValue}
@@ -169,6 +193,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
               />
               <button
                 type="button"
+                aria-label={`Apply custom ${selectorLabel.toLowerCase()}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (customInputValue.trim()) {
@@ -201,31 +226,42 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
   ) => {
     const isActive = activeSelector?.sectionId === sectionId && activeSelector?.type === type;
     const innerSizeClasses = 'px-3.5 sm:px-4 py-1.5 min-h-[44px] rounded-[14px] text-[15px] sm:text-xl font-bold';
+    const selectorLabel = SELECTOR_LABELS[type];
+    const listboxId = `selector-listbox-${sectionId}-${type}`;
 
     return (
-      <div className="relative min-w-0 max-w-full">
-        <button
-          type="button"
-          onClick={(e) => toggleSelector(e, sectionId, type)}
-          className={`inline-flex max-w-full p-[2px] music-gradient rounded-2xl transition-all duration-150 active:scale-[0.98] cursor-pointer ${isActive ? 'ring-2 ring-[#ffffff]/80 shadow-[0_0_24px_rgba(193,255,114,0.5)] brightness-110' : 'shadow-lg shadow-[#c1ff72]/15 hover:brightness-110 hover:shadow-[0_0_20px_rgba(193,255,114,0.35)]'}`}
+      <div data-pill-anchor className="relative min-w-0 max-w-full">
+        <div
+          className={`inline-flex max-w-full p-[2px] music-gradient rounded-2xl transition-all duration-150 ${isActive ? 'ring-2 ring-[#ffffff]/80 shadow-[0_0_24px_rgba(193,255,114,0.5)] brightness-110' : 'shadow-lg shadow-[#c1ff72]/15 hover:brightness-110 hover:shadow-[0_0_20px_rgba(193,255,114,0.35)]'}`}
         >
-          <span className={`${innerSizeClasses} ${options?.tabular ? 'tabular-nums' : ''} min-w-0 max-w-full bg-[#000000] border border-[#000000] text-[#ffffff] flex items-center gap-2`}>
-            <span className="truncate min-w-0">{displayText}</span>
-            <Icons.ChevronDown className={`w-4 h-4 shrink-0 text-[#c1ff72] transition-transform duration-150 ${isActive ? 'rotate-180' : ''}`} />
+          <div className={`${innerSizeClasses} ${options?.tabular ? 'tabular-nums' : ''} min-w-0 max-w-full bg-[#000000] border border-[#000000] text-[#ffffff] flex items-center gap-2`}>
+            <button
+              type="button"
+              aria-label={`${selectorLabel}: ${displayText || 'Not set'}`}
+              aria-haspopup="listbox"
+              aria-expanded={isActive}
+              aria-controls={isActive ? listboxId : undefined}
+              onClick={(e) => toggleSelector(e, sectionId, type)}
+              className="flex items-center gap-2 min-w-0 max-w-full bg-transparent text-[#ffffff] cursor-pointer active:scale-[0.98] transition-transform duration-150"
+            >
+              <span className="truncate min-w-0">{displayText}</span>
+              <Icons.ChevronDown aria-hidden="true" className={`w-4 h-4 shrink-0 text-[#c1ff72] transition-transform duration-150 ${isActive ? 'rotate-180' : ''}`} />
+            </button>
             {options?.removable && (
-              <span
+              <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   updateHelperSection(sectionId, { [type]: undefined });
                 }}
-                className="ml-0.5 text-white/60 hover:text-red-400 transition-colors shrink-0"
-                aria-label={`Remove ${type}`}
+                className="ml-0.5 text-white/60 hover:text-red-400 transition-colors shrink-0 cursor-pointer"
+                aria-label={`Clear ${selectorLabel.toLowerCase()}`}
               >
-                <Icons.X className="w-4 h-4" />
-              </span>
+                <Icons.X aria-hidden="true" className="w-4 h-4" />
+              </button>
             )}
-          </span>
-        </button>
+          </div>
+        </div>
         {renderSelector(sectionId, type)}
       </div>
     );
@@ -241,11 +277,18 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
 
   return (
     <div
+      role="region"
+      aria-label="Prompt Builder"
       className="w-full bg-[#000000] text-[#ffffff] border border-white/40 hover:border-[#ffffff] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),0_0_20px_rgba(193,255,114,0.35)] focus-within:border-[#ffffff] focus-within:shadow-[inset_0_0_0_1px_#ffffff,0_0_26px_rgba(193,255,114,0.5)] rounded-3xl p-4 sm:p-8 space-y-5 sm:space-y-6 transition-all duration-200"
       onClick={() => setActiveSelector(null)}
     >
-      {helperSections.map((s) => (
-        <div key={s.id} className="flex flex-wrap items-center gap-x-2.5 sm:gap-x-3 gap-y-3 sm:gap-y-3.5 text-[15px] sm:text-xl font-light leading-relaxed">
+      {helperSections.map((s, sectionIdx) => (
+        <div
+          key={s.id}
+          role="group"
+          aria-label={s.type === 'main' ? 'Main song structure' : `Transition section ${sectionIdx}`}
+          className="flex flex-wrap items-center gap-x-2.5 sm:gap-x-3 gap-y-3 sm:gap-y-3.5 text-[15px] sm:text-xl font-light leading-relaxed"
+        >
           {s.type === 'main' ? (
             <>
               <span className="text-gray-400">Create a</span>
@@ -269,9 +312,9 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setHelperSections(prev => prev.filter(sec => sec.id !== s.id)); }}
                 className="min-w-[44px] min-h-[44px] flex items-center justify-center text-white hover:text-red-400 transition-colors p-2 ml-auto cursor-pointer"
-                aria-label="Remove section"
+                aria-label={`Remove transition section ${sectionIdx}`}
               >
-                <Icons.X className="w-5 h-5" />
+                <Icons.X aria-hidden="true" className="w-5 h-5" />
               </button>
             </>
           )}
@@ -280,27 +323,27 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
 
       <div className="pt-3 sm:pt-6 flex flex-col gap-4">
         {selectedImages.length > 0 && (
-          <div className="flex flex-wrap gap-3 sm:gap-4">
+          <div role="list" aria-label="Uploaded reference images" className="flex flex-wrap gap-3 sm:gap-4">
             {selectedImages.map((img, idx) => (
-              <div key={idx} className="relative group rounded-2xl overflow-hidden border border-white/40 w-24 h-24 flex-shrink-0 shadow-sm">
-                <img src={img.previewUrl} alt={`Selected reference ${idx + 1}`} className="w-full h-full object-cover" />
+              <div key={idx} role="listitem" className="relative group rounded-2xl overflow-hidden border border-white/40 w-24 h-24 flex-shrink-0 shadow-sm">
+                <img src={img.previewUrl} alt={`Uploaded reference image ${idx + 1}`} className="w-full h-full object-cover" />
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); onImageRemove(idx); }}
                   className="absolute top-1.5 right-1.5 w-7 h-7 bg-black/80 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors cursor-pointer"
-                  aria-label={`Remove image ${idx + 1}`}
+                  aria-label={`Remove uploaded reference image ${idx + 1}`}
                 >
-                  <Icons.X className="w-4 h-4" />
+                  <Icons.X aria-hidden="true" className="w-4 h-4" />
                 </button>
               </div>
             ))}
           </div>
         )}
-        <div className="flex flex-col sm:flex-row items-stretch gap-3 sm:gap-4">
+        <div role="group" aria-label="Prompt builder actions" className="flex flex-col sm:flex-row items-stretch gap-3 sm:gap-4">
           {selectedImages.length < 10 && (
             <button
               type="button"
-              title="By using this feature, you confirm that you have the necessary rights to any content that you upload. Do not generate content that infringes on others’ intellectual property or privacy rights. Your use of this generative AI service is subject to our Prohibited Use Policy. Please note that uploads, including those from Google Workspace, may be used to develop and improve Google products and services in accordance with our terms."
+              aria-label={selectedImages.length > 0 ? `Add Picture (${selectedImages.length} of 10 uploaded)` : 'Add Picture — upload reference images'}
               onClick={(e) => { e.stopPropagation(); onImageSelect(); }}
               className="w-full sm:flex-1 p-[2px] music-gradient rounded-2xl shadow-lg shadow-[#c1ff72]/15 hover:brightness-110 hover:shadow-[0_0_20px_rgba(193,255,114,0.35)] transition-all duration-150 active:scale-[0.99] cursor-pointer"
             >
@@ -311,6 +354,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
           )}
           <button
             type="button"
+            aria-label="Add Section — append a new song transition section"
             onClick={(e) => { e.stopPropagation(); addHelperSection(); }}
             className="w-full sm:flex-1 p-[2px] music-gradient rounded-2xl shadow-lg shadow-[#c1ff72]/15 hover:brightness-110 hover:shadow-[0_0_20px_rgba(193,255,114,0.35)] transition-all duration-150 active:scale-[0.99] cursor-pointer"
           >
