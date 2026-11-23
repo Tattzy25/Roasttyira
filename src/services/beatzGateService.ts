@@ -6,131 +6,55 @@ export type BeatzGateResult =
   | { status: 'insufficient_funds'; message: string }
   | { status: 'error'; message: string };
 
-const readCustomerIdFromDom = (doc: Document | null | undefined): string => {
-  if (!doc) return '';
-  try {
-    const candidates = [
-      doc.documentElement?.getAttribute('data-customer-id'),
-      doc.body?.getAttribute('data-customer-id'),
-      doc.querySelector('[data-customer-id]')?.getAttribute('data-customer-id'),
-      doc.querySelector('[data-customer_id]')?.getAttribute('data-customer_id'),
-      doc.querySelector('meta[name="customer-id"]')?.getAttribute('content'),
-      doc.querySelector('meta[name="customer_id"]')?.getAttribute('content'),
-      (
-        doc.querySelector(
-          'input[name="customer_id"], input[name="customerId"], #customer_id, #customerId'
-        ) as HTMLInputElement | null
-      )?.value,
-    ];
-    for (const val of candidates) {
-      if (val && String(val).trim()) return String(val).trim();
-    }
-  } catch {
-    // Ignore cross-origin or DOM read errors
-  }
-  return '';
-};
-
-const readCustomerIdFromWindow = (win: Window | null | undefined): string => {
-  if (!win) return '';
-  try {
-    const w = win as any;
-    const candidates = [
-      w?.ShopifyAnalytics?.meta?.page?.customerId,
-      w?.__st?.cid,
-      w?.meta?.page?.customerId,
-      w?.Shopify?.customer?.id,
-      w?.customer_id,
-      w?.customerId,
-    ];
-    for (const val of candidates) {
-      if (val !== undefined && val !== null && String(val).trim()) return String(val).trim();
-    }
-  } catch {
-    // Ignore cross-origin access errors
-  }
-  return '';
-};
-
 export const readCustomerId = (): string => {
-  try {
-    const searchParams = new URLSearchParams(window.location.search);
-    const fromQuery =
-      searchParams.get('customer_id') ||
-      searchParams.get('customerId') ||
-      searchParams.get('cid');
-    if (fromQuery && fromQuery.trim()) return fromQuery.trim();
-  } catch {
-    // Ignore URL parse errors
-  }
-
-  const fromDom = readCustomerIdFromDom(typeof document !== 'undefined' ? document : null);
-  if (fromDom) return fromDom;
-
-  const fromWindow = readCustomerIdFromWindow(typeof window !== 'undefined' ? window : null);
-  if (fromWindow) return fromWindow;
-
-  try {
-    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
-      const fromParentDom = readCustomerIdFromDom(window.parent.document);
-      if (fromParentDom) return fromParentDom;
-      const fromParentWindow = readCustomerIdFromWindow(window.parent);
-      if (fromParentWindow) return fromParentWindow;
-    }
-  } catch {
-    // Cross-origin parent iframe; customer_id comes from URL query or postMessage
-  }
-
-  try {
-    const fromStorage =
-      window.localStorage?.getItem('customer_id') ||
-      window.localStorage?.getItem('customerId') ||
-      window.sessionStorage?.getItem('customer_id') ||
-      window.sessionStorage?.getItem('customerId');
-    if (fromStorage && fromStorage.trim()) return fromStorage.trim();
-  } catch {
-    // Ignore storage access errors
-  }
-
-  return '';
+  if (typeof window === 'undefined') return '';
+  const searchParams = new URLSearchParams(window.location.search);
+  const fromQuery =
+    searchParams.get('customer_id') ??
+    searchParams.get('customerId') ??
+    searchParams.get('cid');
+  return fromQuery ? fromQuery.trim() : '';
 };
 
 export const subscribeCustomerIdMessages = (onCustomerId: (id: string) => void): (() => void) => {
   const handleMessage = (event: MessageEvent) => {
     const data = event.data;
     if (!data || typeof data !== 'object') return;
-    const incoming = data.customer_id ?? data.customerId;
-    if (incoming !== undefined && incoming !== null) {
-      onCustomerId(String(incoming).trim());
+    const incoming = (data as Record<string, unknown>).customer_id ?? (data as Record<string, unknown>).customerId;
+    if (typeof incoming === 'string' || typeof incoming === 'number') {
+      const normalized = String(incoming).trim();
+      if (normalized) {
+        onCustomerId(normalized);
+      }
     }
   };
+
   window.addEventListener('message', handleMessage);
-  try {
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: 'ROASTTID_REQUEST_CUSTOMER_ID' }, '*');
-    }
-  } catch {
-    // Ignore cross-origin postMessage errors
+
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'ROASTTID_REQUEST_CUSTOMER_ID' }, '*');
   }
+
   return () => window.removeEventListener('message', handleMessage);
 };
 
-const extractWebhookErrorMessage = (payload: any): string | null => {
+const extractWebhookErrorMessage = (payload: unknown): string | null => {
   if (!payload) return null;
   if (typeof payload === 'string') {
     const trimmed = payload.trim();
     return trimmed || null;
   }
   if (typeof payload === 'object') {
+    const record = payload as Record<string, unknown>;
     for (const key of ['error', 'error_message', 'errorMessage', 'message', 'msg', 'detail', 'reason']) {
-      const val = payload[key];
+      const val = record[key];
       if (typeof val === 'string' && val.trim()) return val.trim();
       if (val && typeof val === 'object') {
         const nested = extractWebhookErrorMessage(val);
         if (nested) return nested;
       }
     }
-    for (const [key, val] of Object.entries(payload)) {
+    for (const [key, val] of Object.entries(record)) {
       if (key === 'status') continue;
       if (typeof val === 'string' && val.trim()) return val.trim();
     }
@@ -138,22 +62,20 @@ const extractWebhookErrorMessage = (payload: any): string | null => {
   return null;
 };
 
-const getWebhookError = (ok: boolean, status: number, data: any, rawText: string): string | null => {
+const getWebhookError = (ok: boolean, status: number, data: unknown, rawText: string): string | null => {
+  const record = data && typeof data === 'object' ? (data as Record<string, unknown>) : null;
   const statusStr =
-    data && typeof data === 'object' && typeof data.status === 'string'
-      ? data.status.trim().toLowerCase()
-      : null;
+    record && typeof record.status === 'string' ? record.status.trim().toLowerCase() : null;
 
   const explicitFailure =
     !ok ||
     Boolean(
-      data &&
-        typeof data === 'object' &&
-        ((typeof data.error === 'string' && data.error.trim() !== '') ||
-          data.error === true ||
-          (data.error && typeof data.error === 'object') ||
-          data.success === false ||
-          data.ok === false ||
+      record &&
+        ((typeof record.error === 'string' && record.error.trim() !== '') ||
+          record.error === true ||
+          (record.error && typeof record.error === 'object') ||
+          record.success === false ||
+          record.ok === false ||
           (statusStr !== null && statusStr !== 'ok' && statusStr !== 'success'))
     );
 
@@ -161,19 +83,19 @@ const getWebhookError = (ok: boolean, status: number, data: any, rawText: string
 
   const extracted = extractWebhookErrorMessage(data);
   if (extracted) return extracted;
-  if (rawText && rawText.trim()) return rawText.trim();
+  if (rawText.trim()) return rawText.trim();
   return `Request failed (${status})`;
 };
 
-const isMissingCustomerError = (status: number, data: any, message: string): boolean => {
+const isMissingCustomerError = (status: number, data: unknown, message: string): boolean => {
   if (status === 401) return true;
 
-  const extraFields =
-    data && typeof data === 'object'
-      ? [data.code, data.error_code, data.errorCode, data.reason, data.error, data.message]
-          .filter((v) => typeof v === 'string')
-          .join(' ')
-      : '';
+  const record = data && typeof data === 'object' ? (data as Record<string, unknown>) : null;
+  const extraFields = record
+    ? [record.code, record.error_code, record.errorCode, record.reason, record.error, record.message]
+        .filter((v): v is string => typeof v === 'string')
+        .join(' ')
+    : '';
   const combined = `${message} ${extraFields}`.toLowerCase();
 
   return /customer[\s_-]*id[\s_-]*(is[\s_-]*)?(missing|required|not[\s_-]*found|invalid|empty)|missing[\s_-]*customer|customer[\s_-]*(is[\s_-]*)?missing|not[\s_-]*(signed|logged)[\s_-]*in|sign[\s_-]*in[\s_-]*required|login[\s_-]*required|unauthenticated|unauthorized/.test(
@@ -181,15 +103,15 @@ const isMissingCustomerError = (status: number, data: any, message: string): boo
   );
 };
 
-const isInsufficientFundsError = (status: number, data: any, message: string): boolean => {
+const isInsufficientFundsError = (status: number, data: unknown, message: string): boolean => {
   if (status === 402) return true;
 
-  const extraFields =
-    data && typeof data === 'object'
-      ? [data.code, data.error_code, data.errorCode, data.reason, data.error, data.message]
-          .filter((v) => typeof v === 'string')
-          .join(' ')
-      : '';
+  const record = data && typeof data === 'object' ? (data as Record<string, unknown>) : null;
+  const extraFields = record
+    ? [record.code, record.error_code, record.errorCode, record.reason, record.error, record.message]
+        .filter((v): v is string => typeof v === 'string')
+        .join(' ')
+    : '';
   const combined = `${message} ${extraFields}`.toLowerCase();
 
   if (
@@ -200,8 +122,8 @@ const isInsufficientFundsError = (status: number, data: any, message: string): b
     return true;
   }
 
-  if (data && typeof data === 'object') {
-    const remaining = data.beatz_current ?? data.beatz ?? data.balance ?? data.credits;
+  if (record) {
+    const remaining = record.beatz_current ?? record.beatz ?? record.balance ?? record.credits;
     if (remaining === 0 || remaining === '0') return true;
   }
 
@@ -210,7 +132,7 @@ const isInsufficientFundsError = (status: number, data: any, message: string): b
 
 export const checkBeatzAccess = async (knownCustomerId?: string): Promise<BeatzGateResult> => {
   try {
-    const activeCustomerId = (knownCustomerId || '').trim() || readCustomerId();
+    const activeCustomerId = knownCustomerId ? knownCustomerId.trim() : readCustomerId();
     const res = await fetch(BEATZ_CLICKS_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -221,14 +143,9 @@ export const checkBeatzAccess = async (knownCustomerId?: string): Promise<BeatzG
     });
 
     const rawText = await res.text();
-    let parsedData: any = null;
-    if (rawText) {
-      try {
-        parsedData = JSON.parse(rawText);
-      } catch {
-        parsedData = null;
-      }
-    }
+    const contentType = res.headers.get('content-type') ?? '';
+    const parsedData: unknown =
+      rawText && contentType.toLowerCase().includes('application/json') ? JSON.parse(rawText) : null;
 
     const errMsg = getWebhookError(res.ok, res.status, parsedData, rawText);
     if (!errMsg) {
@@ -244,7 +161,8 @@ export const checkBeatzAccess = async (knownCustomerId?: string): Promise<BeatzG
     }
 
     return { status: 'error', message: errMsg };
-  } catch (err: any) {
-    return { status: 'error', message: err?.message || 'Unable to reach Beatz service.' };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { status: 'error', message };
   }
 };

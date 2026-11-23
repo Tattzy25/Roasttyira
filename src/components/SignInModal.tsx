@@ -28,15 +28,11 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
 
   const handleSignInClick = () => {
     setHasOpenedSignIn(true);
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(
-          { type: 'ROASTTID_SIGN_IN_REQUEST', url: ROASTTID_ACCOUNT_SIGN_IN_URL },
-          '*'
-        );
-      }
-    } catch {
-      // Ignore cross-origin postMessage errors
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'ROASTTID_SIGN_IN_REQUEST', url: ROASTTID_ACCOUNT_SIGN_IN_URL },
+        '*'
+      );
     }
   };
 

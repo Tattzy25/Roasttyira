@@ -32,7 +32,7 @@ const parseMcpToolContent = (rpcResponse: any): any => {
   throw new Error('Unexpected response from Shopify UCP MCP.');
 };
 
-export const callUcpTool = async (name: string, args: Record<string, any>): Promise<any> => {
+export const callUcpTool = async (name: string, args: Record<string, unknown>): Promise<any> => {
   const res = await fetch(UCP_MCP_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -95,25 +95,28 @@ export const fetchLiveBeatzPacks = async (): Promise<BeatzPack[]> => {
       throw new Error('Incomplete variant pricing in Shopify UCP response.');
     }
 
-    const rawTitle = String(variant?.title ?? '').trim();
-    const numericCount = parseInt(rawTitle, 10);
-    const beatzCount = Number.isFinite(numericCount) && numericCount > 0 ? numericCount : 1;
-    const title = Number.isFinite(numericCount) && numericCount > 0 ? `${numericCount} Beatz` : rawTitle;
-    const imageUrl = parseStrictHttpsUrl(
-      variant?.media?.[0]?.url ?? product?.media?.[0]?.url,
-      'media.url'
-    );
-    const directCheckoutUrl = parseStrictHttpsUrl(variant?.checkout_url, 'checkout_url');
+    const rawTitle = typeof variant?.title === 'string' ? variant.title.trim() : '';
+    const numericCount = Number(rawTitle);
+    if (!Number.isInteger(numericCount) || numericCount <= 0) {
+      throw new Error(`Invalid Beatz count title "${rawTitle}" for variant ${variantGid}.`);
+    }
+
+    if (typeof variant?.availability?.available !== 'boolean') {
+      throw new Error(`Missing availability boolean for variant ${variantGid}.`);
+    }
+
+    const imageUrl = parseStrictHttpsUrl(variant?.media?.[0]?.url, 'variant.media[0].url');
+    const directCheckoutUrl = parseStrictHttpsUrl(variant?.checkout_url, 'variant.checkout_url');
 
     return {
       variantGid,
-      beatzCount,
-      title,
+      beatzCount: numericCount,
+      title: `${numericCount} Beatz`,
       priceCents: amount,
       currency,
       imageUrl,
       directCheckoutUrl,
-      available: variant?.availability?.available !== false,
+      available: variant.availability.available === true,
     };
   });
 
