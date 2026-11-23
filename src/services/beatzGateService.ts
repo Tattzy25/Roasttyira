@@ -105,6 +105,13 @@ export const subscribeCustomerIdMessages = (onCustomerId: (id: string) => void):
     }
   };
   window.addEventListener('message', handleMessage);
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'ROASTTID_REQUEST_CUSTOMER_ID' }, '*');
+    }
+  } catch {
+    // Ignore cross-origin postMessage errors
+  }
   return () => window.removeEventListener('message', handleMessage);
 };
 
